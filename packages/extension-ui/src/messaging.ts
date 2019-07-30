@@ -46,7 +46,7 @@ port.onMessage.addListener((data): void => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sendMessage (message: MessageTypes, request: any = {}, subscriber?: (data: any) => void): Promise<any> {
+function sendMessage(message: MessageTypes, request: any = {}, subscriber?: (data: any) => void): Promise<any> {
   return new Promise((resolve, reject): void => {
     const id = `${Date.now()}.${++idCounter}`;
 
@@ -56,62 +56,66 @@ function sendMessage (message: MessageTypes, request: any = {}, subscriber?: (da
   });
 }
 
-export async function editAccount (address: string, name: string): Promise<boolean> {
+export async function editAccount(address: string, name: string): Promise<boolean> {
   return sendMessage('accounts.edit', { address, name });
 }
 
-export async function forgetAccount (address: string): Promise<boolean> {
+export async function forgetAccount(address: string): Promise<boolean> {
   return sendMessage('accounts.forget', { address });
 }
 
-export async function getAccounts (): Promise<KeyringJson[]> {
+export async function getAccounts(): Promise<KeyringJson[]> {
   return sendMessage('accounts.list');
 }
 
-export async function getAuthRequests (): Promise<AuthorizeRequest[]> {
+export async function getAuthRequests(): Promise<AuthorizeRequest[]> {
   return sendMessage('authorize.requests');
 }
 
-export async function rejectAuthRequest (id: string): Promise<boolean> {
+export async function rejectAuthRequest(id: string): Promise<boolean> {
   return sendMessage('authorize.reject', { id });
 }
 
-export async function approveAuthRequest (id: string): Promise<boolean> {
+export async function approveAuthRequest(id: string): Promise<boolean> {
   return sendMessage('authorize.approve', { id });
 }
 
-export async function getSignRequests (): Promise<SigningRequest[]> {
+export async function getSignRequests(): Promise<SigningRequest[]> {
   return sendMessage('signing.requests');
 }
 
-export async function cancelSignRequest (id: string): Promise<boolean> {
+export async function cancelSignRequest(id: string): Promise<boolean> {
   return sendMessage('signing.cancel', { id });
 }
 
-export async function approveSignRequest (id: string, password: string): Promise<boolean> {
+export async function approveSignRequest(id: string, password: string): Promise<boolean> {
   return sendMessage('signing.approve', { id, password });
 }
 
-export async function createAccount (name: string, password: string, suri: string, type?: KeypairType): Promise<boolean> {
+export async function createAccount(name: string, password: string, suri: string, type?: KeypairType): Promise<boolean> {
   return sendMessage('accounts.create', { name, password, suri, type });
 }
 
-export async function createSeed (length?: number, type?: KeypairType): Promise<{ address: string; seed: string }> {
+export async function createSeed(length?: number, type?: KeypairType): Promise<{ address: string; seed: string }> {
   return sendMessage('seed.create', { length, type });
 }
 
-export async function subscribeAccounts (cb: (accounts: KeyringJson[]) => void): Promise<boolean> {
+export async function subscribeAccounts(cb: (accounts: KeyringJson[]) => void): Promise<boolean> {
   return sendMessage('accounts.subscribe', {}, cb);
 }
 
-export async function subscribeAuthorize (cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
+export async function subscribeAuthorize(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
   return sendMessage('authorize.subscribe', {}, cb);
 }
 
-export async function subscribeSigning (cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
+export async function subscribeSigning(cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
   return sendMessage('signing.subscribe', {}, cb);
 }
 
-export async function validateSeed (seed: string, type?: KeypairType): Promise<{ address: string; seed: string }> {
+export async function validateSeed(seed: string, type?: KeypairType): Promise<{ address: string; seed: string }> {
   return sendMessage('seed.validate', { seed, type });
+}
+
+export async function notifyApiUrlChanged(apiUrl: string): Promise<void> {
+  return sendMessage('settings.apiUrlChanged', { apiUrl });
 }

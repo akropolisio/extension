@@ -8,18 +8,32 @@ import React, { useState } from 'react';
 import settings from '@polkadot/ui-settings';
 import { setAddressPrefix } from '@polkadot/util-crypto';
 
-import { Dropdown, Header } from '../../components';
+import { Dropdown, Header, Input, Button } from '../../components';
+import { notifyApiUrlChanged } from '../../messaging';
 import { Back } from '../../partials';
 
-const options = settings.availablePrefixes.map(({ text, value }): { text: string; value: string } => ({
+const prefixOptions = settings.availablePrefixes.map(({ text, value }): { text: string; value: string } => ({
   text: value === -1
     ? 'Substrate (default)'
     : text,
   value: `${value}`
 }));
 
-export default function Settings (): React.ReactElement<{}> {
+const apiUrlOptions = [{ text: 'Custom node', value: '' }].concat(
+  settings.availableNodes.map(({ text, value }) => ({ text, value: `${value}` })),
+)
+
+function isCustomNode(value: string) {
+  return !settings.availableNodes.some(item => item.value === value);
+}
+
+const INITIAL_CUSTOM_URL = 'wss://';
+
+export default function Settings(): React.ReactElement<{}> {
   const [prefix, setPrefix] = useState(`${settings.prefix}`);
+  const [currentApiUrl, setCurrentApiUrl] = useState(settings.apiUrl);
+  const [selectedApiUrl, selectApiUrl] = useState(isCustomNode(settings.apiUrl) ? '' : `${settings.apiUrl}`);
+  const [customApiUrl, setCustomApiUrl] = useState(isCustomNode(settings.apiUrl) ? `${settings.apiUrl}` : INITIAL_CUSTOM_URL);
 
   // FIXME check against index, we need a better solution
   const _onChangePrefix = (value: string): void => {
@@ -31,6 +45,27 @@ export default function Settings (): React.ReactElement<{}> {
     settings.set({ prefix });
   };
 
+  const _saveApiUrl = (value: string) => {
+    settings.set({ apiUrl: value });
+    setCurrentApiUrl(value);
+    notifyApiUrlChanged(value);
+  }
+
+  const _onChangeUrl = (value: string): void => {
+    selectApiUrl(value);
+    if (value) {
+      _saveApiUrl(value);
+    }
+  };
+
+  const _onChangeCustomUrl = (value: string): void => {
+    setCustomApiUrl(value);
+  };
+
+  const _onApplyCustomUrl = (): void => {
+    _saveApiUrl(customApiUrl);
+  };
+
   return (
     <div>
       <Header label='settings' />
@@ -38,9 +73,25 @@ export default function Settings (): React.ReactElement<{}> {
       <Dropdown
         label='display addresses formatted for'
         onChange={_onChangePrefix}
-        options={options}
+        options={prefixOptions}
         value={`${prefix}`}
       />
+      <Dropdown
+        label='remote node/endpoint to connect to'
+        onChange={_onChangeUrl}
+        options={apiUrlOptions}
+        value={selectedApiUrl}
+      />
+      {!selectedApiUrl && (<>
+        <Input
+          label='custom endpoint URL'
+          value={customApiUrl}
+          onChange={_onChangeCustomUrl}
+        />
+        {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (
+          <Button onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
+        )}
+      </>)}
     </div>
   );
 }

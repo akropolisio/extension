@@ -4,7 +4,7 @@
 
 import { SubjectInfo } from '@polkadot/ui-keyring/observable/types';
 import { KeyringJson } from '@polkadot/ui-keyring/types';
-import { AuthorizeRequest, MessageTypes, MessageAccountCreate, MessageAccountEdit, MessageAuthorizeApprove, MessageAuthorizeReject, MessageExtrinsicSignApprove, MessageExtrinsicSignCancel, MessageSeedCreate, MessageSeedCreateResponse, MessageSeedValidate, MessageSeedValidateResponse, MessageAccountForget, SigningRequest } from '../types';
+import { AuthorizeRequest, MessageTypes, MessageAccountCreate, MessageAccountEdit, MessageAuthorizeApprove, MessageAuthorizeReject, MessageExtrinsicSignApprove, MessageExtrinsicSignCancel, MessageSeedCreate, MessageSeedCreateResponse, MessageSeedValidate, MessageSeedValidateResponse, MessageAccountForget, SigningRequest, MessageApiUrlChanged } from '../types';
 
 import keyring from '@polkadot/ui-keyring';
 import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
@@ -192,6 +192,10 @@ export default class Extension {
     return true;
   }
 
+  private updateApiUrl({ apiUrl }: MessageApiUrlChanged): void {
+    this.state.updateApiUrl(apiUrl);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async handle (id: string, type: MessageTypes, request: any, port: chrome.runtime.Port): Promise<any> {
     switch (type) {
@@ -239,6 +243,9 @@ export default class Extension {
 
       case 'signing.subscribe':
         return this.signingSubscribe(id, port);
+
+      case 'settings.apiUrlChanged':
+        return this.updateApiUrl(request);
 
       default:
         throw new Error(`Unable to handle message of type ${type}`);
