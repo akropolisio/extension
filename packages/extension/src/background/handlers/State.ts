@@ -7,8 +7,6 @@ import { AuthorizeRequest, MessageAuthorize, MessageExtrinsicSign, MessageExtrin
 import extension from 'extensionizer';
 import { BehaviorSubject } from 'rxjs';
 import { assert } from '@polkadot/util';
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import settings from '@polkadot/ui-settings';
 
 interface AuthRequest {
   id: string;
@@ -42,8 +40,6 @@ function getId (): string {
 }
 
 export default class State {
-  private _api: ApiPromise = new ApiPromise(new WsProvider(settings.apiUrl));
-
   private _authUrls: AuthUrls = {};
 
   private _authRequests: Record<string, AuthRequest> = {};
@@ -229,9 +225,5 @@ export default class State {
       this.updateIconSign();
       this.popupOpen();
     });
-  }
-
-  public updateApiUrl(newUrl: string) {
-    this._api = new ApiPromise(new WsProvider(newUrl));
   }
 }

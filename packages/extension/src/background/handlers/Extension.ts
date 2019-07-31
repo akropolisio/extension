@@ -14,6 +14,7 @@ import { assert } from '@polkadot/util';
 
 import State from './State';
 import { createSubscription, unsubscribe } from './subscriptions';
+import Assets from './Assets';
 
 const SEED_DEFAULT_LENGTH = 12;
 const SEED_LENGTHS = [12, 24];
@@ -24,9 +25,11 @@ function transformAccounts (accounts: SubjectInfo): KeyringJson[] {
 
 export default class Extension {
   private state: State;
+  private assets: Assets;
 
-  public constructor (state: State) {
+  public constructor (state: State, assets: Assets) {
     this.state = state;
+    this.assets = assets;
   }
 
   private accountsCreate ({ name, password, suri, type }: MessageAccountCreate): boolean {
@@ -193,7 +196,7 @@ export default class Extension {
   }
 
   private updateApiUrl({ apiUrl }: MessageApiUrlChanged): void {
-    this.state.updateApiUrl(apiUrl);
+    this.assets.updateApiUrl(apiUrl);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

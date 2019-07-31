@@ -94,3 +94,10 @@ export interface MessageSeedValidateResponse {
   address: string;
   seed: string;
 }
+
+export type ModuleType = 'balance';
+
+export type IModuleInterface = {
+  query: string[];
+  tx: string[];
+}

@@ -6,11 +6,13 @@ import { MessageRequest } from '../types';
 
 import { PORT_POPUP } from '../../defaults';
 import Extension from './Extension';
+import Assets from './Assets';
 import State from './State';
 import Tabs from './Tabs';
 
 const state = new State();
-const extension = new Extension(state);
+const assets = new Assets();
+const extension = new Extension(state, assets);
 const tabs = new Tabs(state);
 
 export default function handler ({ id, message, request }: MessageRequest, port: chrome.runtime.Port): void {
