@@ -22,9 +22,10 @@ interface Props {
   className?: string;
   name?: React.ReactNode | null;
   theme?: 'polkadot' | 'substrate';
+  onClick?(): void;
 }
 
-function Address ({ accounts, address, children, className, name, theme = 'polkadot' }: Props): React.ReactElement<Props> {
+function Address({ accounts, address, children, className, name, theme = 'polkadot', onClick }: Props): React.ReactElement<Props> {
   const [account, setAccount] = useState<KeyringJson | null>(null);
   const [formatted, setFormatted] = useState<string | null>(null);
 
@@ -58,10 +59,10 @@ function Address ({ accounts, address, children, className, name, theme = 'polka
         />
       }
       intro={
-        <>
+        <div onClick={onClick} className={onClick ? 'clickable' : undefined}>
           <div className='name'>{name || (account && account.meta.name) || '<unknown>'}</div>
           <div className='address'>{formatted || '<unknown>'}</div>
-        </>
+        </div>
       }
     >
       {children}
@@ -78,5 +79,9 @@ export default withAccounts(styled(Address)`
 
   .name {
     padding-bottom: 0.5rem;
+  }
+
+  .clickable {
+    cursor: pointer;
   }
 `);

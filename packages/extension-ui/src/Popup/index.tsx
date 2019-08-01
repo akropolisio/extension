@@ -22,6 +22,7 @@ import Import from './Import';
 import Settings from './Settings';
 import Signing from './Signing';
 import Welcome from './Welcome';
+import Assets from './Assets';
 
 // load the ui settings, actually only used for address prefix atm
 // probably overkill (however can replace once we have actual others)
@@ -30,7 +31,7 @@ const { prefix } = settings.get();
 // FIXME Duplicated in Settings, horrible...
 setAddressPrefix((prefix === -1 ? 42 : prefix) as Prefix);
 
-export default function Popup (): React.ReactElement<{}> {
+export default function Popup(): React.ReactElement<{}> {
   const [accounts, setAccounts] = useState<null | KeyringJson[]>(null);
   const [authRequests, setAuthRequests] = useState<null | AuthorizeRequest[]>(null);
   const [signRequests, setSignRequests] = useState<null | SigningRequest[]>(null);
@@ -71,6 +72,7 @@ export default function Popup (): React.ReactElement<{}> {
                 <Route path='/account/create' component={Create} />
                 <Route path='/account/forget/:address' component={Forget} />
                 <Route path='/account/import' component={Import} />
+                <Route path='/assets/:address' component={Assets} />
                 <Route path='/settings' component={Settings} />
                 <Route exact path='/' component={Root} />
               </Switch>

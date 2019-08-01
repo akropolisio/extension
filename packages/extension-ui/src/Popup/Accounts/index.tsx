@@ -6,14 +6,19 @@ import { AccountsFromCtx } from '../../components/types';
 
 import React from 'react';
 
-import { Button, Header, Link, Tip, unicode, withAccounts } from '../../components';
+import { Button, Header, Link, Tip, unicode, withAccounts, withOnAction } from '../../components';
 import Account from './Account';
 
 interface Props {
   accounts: AccountsFromCtx;
+  onAction(to?: string): void;
 }
 
-function Accounts ({ accounts }: Props): React.ReactElement<Props> {
+function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
+  const _onAddressClick = React.useCallback((address: string) => {
+    onAction(`assets/${address}`)
+  }, []);
+
   return (
     <div>
       <Header
@@ -26,6 +31,7 @@ function Accounts ({ accounts }: Props): React.ReactElement<Props> {
           : accounts.map(({ address }): React.ReactNode => (
             <Account
               address={address}
+              onClick={_onAddressClick}
               key={address}
             />
           ))
@@ -42,4 +48,8 @@ function Accounts ({ accounts }: Props): React.ReactElement<Props> {
   );
 }
 
-export default withAccounts(Accounts);
+export default (
+  withOnAction(
+    withAccounts(Accounts),
+  )
+);

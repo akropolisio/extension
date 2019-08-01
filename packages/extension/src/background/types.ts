@@ -101,3 +101,13 @@ export type IModuleInterface = {
   query: string[];
   tx: string[];
 }
+
+interface IAssetBase<T extends ModuleType, P> {
+  type: T;
+  payload: P;
+}
+
+export type IAsset = IAssetBase<'balance', {
+  symbol: string;
+  balance: string;
+}>
