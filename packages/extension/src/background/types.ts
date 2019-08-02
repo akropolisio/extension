@@ -5,7 +5,7 @@
 import { SignerPayload } from '@polkadot/api/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
-export type MessageTypes = 'authorize.approve' | 'authorize.reject' | 'authorize.requests' | 'authorize.subscribe' | 'authorize.tab' | 'accounts.create' | 'accounts.edit' | 'accounts.forget' | 'accounts.list' | 'accounts.subscribe' | 'extrinsic.sign' | 'seed.create' | 'seed.validate' | 'signing.approve' | 'signing.cancel' | 'signing.requests' | 'signing.subscribe' | 'settings.apiUrlChanged';
+export type MessageTypes = 'authorize.approve' | 'authorize.reject' | 'authorize.requests' | 'authorize.subscribe' | 'authorize.tab' | 'accounts.create' | 'accounts.edit' | 'accounts.forget' | 'accounts.list' | 'accounts.subscribe' | 'extrinsic.sign' | 'seed.create' | 'seed.validate' | 'signing.approve' | 'signing.cancel' | 'signing.requests' | 'signing.subscribe' | 'settings.apiUrlChanged' | 'assets.load';
 
 export type AuthorizeRequest = [string, MessageAuthorize, string];
 
@@ -64,10 +64,6 @@ export interface MessageExtrinsicSignCancel {
   id: string;
 }
 
-export interface MessageApiUrlChanged {
-  apiUrl: string;
-}
-
 export type MessageExtrinsicSign = SignerPayload;
 
 export interface MessageExtrinsicSignResponse {
@@ -95,6 +91,14 @@ export interface MessageSeedValidateResponse {
   seed: string;
 }
 
+export interface MessageApiUrlChanged {
+  apiUrl: string;
+}
+
+export interface AssetsLoadResponse {
+  address: string;
+}
+
 export type ModuleType = 'balance';
 
 export type IModuleInterface = {
@@ -105,9 +109,12 @@ export type IModuleInterface = {
 interface IAssetBase<T extends ModuleType, P> {
   type: T;
   payload: P;
+  fromModule: string;
 }
 
 export type IAsset = IAssetBase<'balance', {
   symbol: string;
-  balance: string;
+  free: string;
+  locks: string[];
+  reserved: string;
 }>

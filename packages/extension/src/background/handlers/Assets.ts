@@ -3,8 +3,11 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { createType, Vec } from '@polkadot/types';
+import { Balance, BalanceLock } from '@polkadot/types/interfaces';
 import settings from '@polkadot/ui-settings';
-import { ModuleType, IModuleInterface } from '../types';
+
+import { ModuleType, IModuleInterface, IAsset } from '../types';
 
 const defaultAssetModules: Record<ModuleType, string[]> = {
   balance: [],
@@ -25,6 +28,9 @@ const moduleInterfaces: Record<ModuleType, IModuleInterface> = {
     ],
   }
 }
+
+const ZERO_BALANCE = createType('Balance', 0);
+const ZERO_VEC = createType('Vec<BalanceLock>', []);
 
 export default class Assets {
   private _api!: ApiPromise;
@@ -60,6 +66,36 @@ export default class Assets {
             [cur]: findInterfaceImplements(api, moduleInterfaces[cur]),
           }
         }, defaultAssetModules);
+    }
+  }
+
+  public async loadAssets(address: string): Promise<IAsset[]> {
+    await this._modulesDetecting;
+
+    return Promise.all(
+      this._assetModules.balance.map(this.loadBalanceAssets.bind(this, address)),
+    )
+  }
+
+  private async loadBalanceAssets(address: string, fromModule: string): Promise<IAsset> {
+    const query = this._api.query[fromModule];
+
+    const [free = ZERO_BALANCE, locks = ZERO_VEC, reserved = ZERO_BALANCE]: [Balance?, Vec<BalanceLock>?, Balance?] =
+      await Promise.all([
+        query.freeBalance(address),
+        query.locks(address),
+        query.reservedBalance(address),
+      ]) as any; // FIXME need to remove 'any'
+
+    return {
+      type: 'balance',
+      fromModule,
+      payload: {
+        symbol: 'Coin',
+        free: free.toString(),
+        locks: locks.map(lock => lock.toString()),
+        reserved: reserved.toString(),
+      }
     }
   }
 }

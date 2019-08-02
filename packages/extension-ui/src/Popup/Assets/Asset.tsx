@@ -19,7 +19,7 @@ function Asset({ asset, className }: Props): React.ReactElement<Props> {
   return (
     <Box className={className}>
       <div className='content'>
-        <div className='amount'>{asset.payload.balance}</div>
+        <div className='amount'>{asset.payload.free}</div>
         <div className='symbol'>{asset.payload.symbol}</div>
         <div className='actions'>
           <Button className='action' isDisabled>Send</Button>
@@ -41,7 +41,6 @@ export default styled(Asset)`
   }
   .symbol {
     margin-right: 0.75rem;
-    text-transform: uppercase;
   }
   .action {
     margin-right: 0.75rem;

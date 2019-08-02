@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AuthorizeRequest, MessageTypes, SigningRequest } from '@polkadot/extension/background/types';
+import { AuthorizeRequest, MessageTypes, SigningRequest, IAsset } from '@polkadot/extension/background/types';
 import { KeyringJson } from '@polkadot/ui-keyring/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
@@ -118,4 +118,8 @@ export async function validateSeed(seed: string, type?: KeypairType): Promise<{ 
 
 export async function notifyApiUrlChanged(apiUrl: string): Promise<void> {
   return sendMessage('settings.apiUrlChanged', { apiUrl });
+}
+
+export async function loadAssets(address: string): Promise<IAsset[]> {
+  return sendMessage('assets.load', { address });
 }

@@ -3,61 +3,78 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React from 'react';
+import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
-
-import { Header, Link, Tip, unicode, Address } from '../../components';
-import Asset from './Asset';
 import { IAsset } from '@polkadot/extension/background/types';
 
-interface Props extends RouteComponentProps<{ address: string }> { }
+import { Header, Link, Tip, unicode, Address, Button } from '../../components';
+import { loadAssets } from '../../messaging';
+import Asset from './Asset';
 
-const mockAssets: IAsset[] = [
-  {
-    type: 'balance',
-    payload: {
-      balance: '2000000000',
-      symbol: 'DOT',
-    },
-  },
-  {
-    type: 'balance',
-    payload: {
-      balance: '1000000000',
-      symbol: 'DOTs',
-    },
-  },
-  {
-    type: 'balance',
-    payload: {
-      balance: '4500000000',
-      symbol: 'DOTrr',
-    },
-  },
-]
+interface Props extends RouteComponentProps<{ address: string }> {
+  className?: string;
+}
 
 function Assets(props: Props): React.ReactElement<Props> {
-  const { match } = props;
+  const { match, className } = props;
   const { address } = match.params;
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState('');
+  const [assets, setAssets] = React.useState<IAsset[]>([]);
+
+  const _loadAssets = React.useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const assets = await loadAssets(address);
+      setAssets(assets);
+    } catch (error) {
+      setError(String(error));
+      setAssets([]);
+    }
+    setLoading(false);
+  }, [address]);
+
+  React.useEffect(() => { _loadAssets() }, []);
 
   return (
-    <div>
+    <div className={className}>
       <Header
         label='assets'
-        labelExtra={<Link to='/'>{unicode.BACK} Back</Link>}
+        labelExtra={(
+          <Button onClick={_loadAssets} isDisabled={loading} className='reload'>
+            {!loading ? 'Reload' : '... Loading ...'}
+          </Button>
+        )}
       />
+      <Link to='/' className='back-link'>{unicode.BACK} Back</Link>
       <Address address={address} />
-      {
-        (mockAssets.length === 0)
+      {!loading && (<>
+        {!!error && <Tip header='something went wrong' type='error'>{error}</Tip>}
+        {!error && assets.length === 0
           ? <Tip header='assets not found' type='info'>You currently don&apos;t have any assets.</Tip>
-          : mockAssets.map((asset, index): React.ReactNode => (
+          : assets.map((asset, index): React.ReactNode => (
             <Asset
               asset={asset}
               key={index}
             />
           ))
-      }
+        }
+      </>)}
     </div>
   );
 }
 
-export default Assets;
+export default styled(Assets)`
+  .back-link {
+    padding-bottom: 0.5rem;
+    display: inline-block;
+  }
+  .reload {
+    margin: 0;
+
+    & button {
+      padding: 0.375rem 1rem;
+    }
+  }
+`;
