@@ -1,5 +1,5 @@
 {
-  "version": "0.6.1",
+  "version": "0.7.0-beta.1",
   "description": "A sample signer extension for the @polkadot/api",
   "repository": "https://github.com/polkadot-js/extension",
   "author": "Jaco Greeff <jacogr@gmail.com>",
@@ -12,11 +12,11 @@
     "yarn": "^1.10.1"
   },
   "resolutions": {
-    "@polkadot/api": "^0.90.0-beta.20",
-    "@polkadot/keyring": "^1.0.1",
-    "@polkadot/types": "^0.90.0-beta.20",
-    "@polkadot/util": "^1.0.1",
-    "@polkadot/util-crypto": "^1.0.1",
+    "@polkadot/api": "^0.90.0-beta.34",
+    "@polkadot/keyring": "^1.1.1",
+    "@polkadot/types": "^0.90.0-beta.34",
+    "@polkadot/util": "^1.1.1",
+    "@polkadot/util-crypto": "^1.1.1",
     "babel-core": "^7.0.0-bridge.0",
     "typescript": "^3.5.3"
   },
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
-    "@polkadot/dev-react": "^0.30.0-beta.24",
-    "@polkadot/ts": "^0.1.63"
+    "@polkadot/dev-react": "^0.31.0-beta.1",
+    "@polkadot/ts": "^0.1.64"
   }
 }
