@@ -9,6 +9,7 @@ import { IAsset } from '@polkadot/extension/background/types';
 
 import { Header, Link, Tip, unicode, Address, Button } from '../../components';
 import { loadAssets } from '../../messaging';
+import Layout from '../Layout';
 import Asset from './Asset';
 
 interface Props extends RouteComponentProps<{ address: string }> {
@@ -38,30 +39,36 @@ function Assets(props: Props): React.ReactElement<Props> {
   React.useEffect(() => { _loadAssets() }, []);
 
   return (
-    <div className={className}>
-      <Header
-        label='assets'
-        labelExtra={(
-          <Button onClick={_loadAssets} isDisabled={loading} className='reload'>
-            {!loading ? 'Reload' : '... Loading ...'}
-          </Button>
-        )}
-      />
-      <Link to='/' className='back-link'>{unicode.BACK} Back</Link>
-      <Address address={address} />
-      {!loading && (<>
-        {!!error && <Tip header='something went wrong' type='error'>{error}</Tip>}
-        {!error && assets.length === 0
-          ? <Tip header='assets not found' type='info'>You currently don&apos;t have any assets.</Tip>
-          : assets.map((asset, index): React.ReactNode => (
-            <Asset
-              asset={asset}
-              key={index}
-            />
-          ))
-        }
-      </>)}
-    </div>
+    <Layout actions={['Action 1', 'Action 2']}>
+      <Layout.Content variant="primary">
+        <Address address={address} />
+      </Layout.Content>
+      <Layout.Content variant="secondary">
+        {!loading && (<>
+          {!!error && <Tip header='something went wrong' type='error'>{error}</Tip>}
+          {!error && assets.length === 0
+            ? <Tip header='assets not found' type='info'>You currently don&apos;t have any assets.</Tip>
+            : assets.map((asset, index): React.ReactNode => (
+              <Asset
+                asset={asset}
+                key={index}
+              />
+            ))
+          }
+        </>)}
+      </Layout.Content>
+      {/* <div className={className}>
+        <Header
+          label='assets'
+          labelExtra={(
+            <Button onClick={_loadAssets} isDisabled={loading} className='reload'>
+              {!loading ? 'Reload' : '... Loading ...'}
+            </Button>
+          )}
+        />
+        <Link to='/' className='back-link'>{unicode.BACK} Back</Link>
+      </div> */}
+    </Layout>
   );
 }
 
