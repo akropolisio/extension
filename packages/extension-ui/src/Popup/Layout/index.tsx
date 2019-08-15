@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import Content from './Content';
+import { Link } from '../../components';
+import { SettingsIcon } from '../../components/icons';
 
 interface IProps {
   children: React.ReactNode;
@@ -14,7 +16,9 @@ function Layout(props: IProps) {
     <div className={className}>
       <div className="header">
         <span>Selector</span>
-        <span>Settings</span>
+        <Link to="/settings">
+          <SettingsIcon color="primary" className="settings-icon" />
+        </Link>
       </div>
       <div className="content">
         {children}
@@ -62,6 +66,10 @@ const Component = styled(Layout)`
 
   .action {
     padding: 10px;
+  }
+
+  .settings-icon {
+    display: block;
   }
 `;
 

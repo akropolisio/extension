@@ -52,7 +52,22 @@ const defaults = {
       border: '#e7c000',
       color: '#6b5900'
     }
-  }
+  },
+  palette: {
+    primary: {
+      main: '#6931b6',
+    },
+    secondary: {
+      main: '#fff',
+    },
+    action: {
+      active: 'rgba(0, 0, 0, 0.54)',
+      disabled: 'rgba(0, 0, 0, 0.26)',
+    },
+    error: {
+      main: '#f44336',
+    }
+  },
 };
 
 export default defaults;
