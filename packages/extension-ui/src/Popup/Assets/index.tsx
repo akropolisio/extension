@@ -41,7 +41,7 @@ function Assets(props: Props): React.ReactElement<Props> {
   return (
     <Layout actions={['Action 1', 'Action 2']}>
       <Layout.Content variant="primary">
-        <Address address={address} />
+        <Address withBalance address={address} />
       </Layout.Content>
       <Layout.Content variant="secondary">
         {!loading && (<>

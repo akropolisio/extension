@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AccountsFromCtx, OnActionFromCtx, AuthRequestsFromCtx, SignRequestsFromCtx, SubtractProps } from './types';
+import { AccountsFromCtx, OnActionFromCtx, AuthRequestsFromCtx, SignRequestsFromCtx, AssetsFromCtx, SubtractProps } from './types';
 
 import React from 'react';
 
@@ -15,15 +15,17 @@ const AccountContext = React.createContext<AccountsFromCtx>([]);
 const ActionContext = React.createContext<OnActionFromCtx>(noop);
 const AuthorizeContext = React.createContext<AuthRequestsFromCtx>([]);
 const SigningContext = React.createContext<SignRequestsFromCtx>([]);
+const AssetsContext = React.createContext<AssetsFromCtx>({});
 
 export {
   AccountContext,
   ActionContext,
   AuthorizeContext,
-  SigningContext
+  SigningContext,
+  AssetsContext
 };
 
-export function withAccounts<P extends { accounts: AccountsFromCtx }> (Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { accounts: AccountsFromCtx }>> {
+export function withAccounts<P extends { accounts: AccountsFromCtx }>(Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { accounts: AccountsFromCtx }>> {
   // eslint-disable-next-line react/display-name,@typescript-eslint/explicit-function-return-type
   return (props: SubtractProps<P, { accounts: AccountsFromCtx }>) => {
     return (
@@ -40,7 +42,7 @@ export function withAccounts<P extends { accounts: AccountsFromCtx }> (Component
   };
 }
 
-export function withOnAction<P extends { onAction: OnActionFromCtx }> (Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { onAction: OnActionFromCtx }>> {
+export function withOnAction<P extends { onAction: OnActionFromCtx }>(Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { onAction: OnActionFromCtx }>> {
   // eslint-disable-next-line react/display-name,@typescript-eslint/explicit-function-return-type
   return (props: SubtractProps<P, { onAction: OnActionFromCtx }>) => {
     return (
@@ -57,7 +59,7 @@ export function withOnAction<P extends { onAction: OnActionFromCtx }> (Component
   };
 }
 
-export function withAuthRequests<P extends { requests: AuthRequestsFromCtx }> (Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { requests: AuthRequestsFromCtx }>> {
+export function withAuthRequests<P extends { requests: AuthRequestsFromCtx }>(Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { requests: AuthRequestsFromCtx }>> {
   // eslint-disable-next-line react/display-name,@typescript-eslint/explicit-function-return-type
   return (props: SubtractProps<P, { requests: AuthRequestsFromCtx }>) => {
     return (
@@ -74,7 +76,7 @@ export function withAuthRequests<P extends { requests: AuthRequestsFromCtx }> (C
   };
 }
 
-export function withSignRequests<P extends { requests: SignRequestsFromCtx }> (Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { requests: SignRequestsFromCtx }>> {
+export function withSignRequests<P extends { requests: SignRequestsFromCtx }>(Component: React.ComponentType<P>): React.ComponentType<SubtractProps<P, { requests: SignRequestsFromCtx }>> {
   // eslint-disable-next-line react/display-name,@typescript-eslint/explicit-function-return-type
   return (props: SubtractProps<P, { requests: SignRequestsFromCtx }>) => {
     return (

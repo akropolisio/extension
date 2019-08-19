@@ -36,6 +36,7 @@ function Account({ address, className, onAction, onClick }: Props): React.ReactE
 
   return (
     <Address
+      withBalance
       address={address}
       className={className}
       onClick={onClick.bind(null, address)}

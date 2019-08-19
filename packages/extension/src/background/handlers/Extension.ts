@@ -2,9 +2,10 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
+import { Subscribable } from 'rxjs';
 import { SubjectInfo } from '@polkadot/ui-keyring/observable/types';
 import { KeyringJson } from '@polkadot/ui-keyring/types';
-import { AuthorizeRequest, MessageTypes, MessageAccountCreate, MessageAccountEdit, MessageAuthorizeApprove, MessageAuthorizeReject, MessageExtrinsicSignApprove, MessageExtrinsicSignCancel, MessageSeedCreate, MessageSeedCreateResponse, MessageSeedValidate, MessageSeedValidateResponse, MessageAccountForget, SigningRequest, MessageApiUrlChanged, IAsset, AssetsLoadResponse } from '../types';
+import { AuthorizeRequest, MessageTypes, MessageAccountCreate, MessageAccountEdit, MessageAuthorizeApprove, MessageAuthorizeReject, MessageExtrinsicSignApprove, MessageExtrinsicSignCancel, MessageSeedCreate, MessageSeedCreateResponse, MessageSeedValidate, MessageSeedValidateResponse, MessageAccountForget, SigningRequest, MessageApiUrlChanged } from '../types';
 
 import keyring from '@polkadot/ui-keyring';
 import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
@@ -199,8 +200,20 @@ export default class Extension {
     this.assets.updateApiUrl(apiUrl);
   }
 
-  private loadAssets({ address }: AssetsLoadResponse): Promise<IAsset[]> {
-    return this.assets.loadAssets(address);
+  private subscribeAssets(id: string, port: chrome.runtime.Port): boolean {
+    return this.subscribeToObservable(id, port, this.assets.balances);
+  }
+
+  private subscribeToObservable(id: string, port: chrome.runtime.Port, target: Subscribable<any>): boolean {
+    const cb = createSubscription(id, port);
+    const subscription = target.subscribe(cb);
+
+    port.onDisconnect.addListener((): void => {
+      unsubscribe(id);
+      subscription.unsubscribe();
+    });
+
+    return true;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -254,8 +267,8 @@ export default class Extension {
       case 'settings.apiUrlChanged':
         return this.updateApiUrl(request);
 
-      case 'assets.load':
-        return this.loadAssets(request);
+      case 'assets.subscribe':
+        return this.subscribeAssets(id, port);
 
       default:
         throw new Error(`Unable to handle message of type ${type}`);

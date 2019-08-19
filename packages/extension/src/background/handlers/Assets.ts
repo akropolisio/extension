@@ -2,10 +2,13 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { map, pairwise, tap, concatMap, switchMap } from 'rxjs/operators';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { createType, Vec } from '@polkadot/types';
 import { Balance, BalanceLock } from '@polkadot/types/interfaces';
 import settings from '@polkadot/ui-settings';
+import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
 
 import { ModuleType, IModuleInterface, IAsset } from '../types';
 
@@ -33,52 +36,72 @@ const ZERO_BALANCE = createType('Balance', 0);
 const ZERO_VEC = createType('Vec<BalanceLock>', []);
 
 export default class Assets {
-  private _api!: ApiPromise;
+  private readonly _apiUrl = new BehaviorSubject(settings.apiUrl);
 
-  private _assetModules: Record<ModuleType, string[]> = defaultAssetModules;
+  private readonly _api: Observable<ApiPromise> = this._apiUrl.asObservable().pipe(
+    concatMap(async url => {
+      const api = new ApiPromise(new WsProvider(url));
+      await new Promise(resolve => api.once('ready', resolve));
+      return api;
+    }),
+  );
 
-  private _modulesDetecting: Promise<void> = new Promise(() => void 0);
+  private readonly _assetModules: Observable<Record<ModuleType, string[]>> = this._api.pipe(
+    map(this.getAssetModules),
+  );
+
+  public readonly balances: Observable<Record<string, IAsset[]>> = combineLatest(
+    this._api,
+    this._assetModules,
+    accountsObservable.subject.asObservable(),
+  ).pipe(
+    switchMap(async ([api, assetModules, _accounts]) => {
+      const addresses = Object.values(_accounts).map(({ json }) => json.address);
+      return this.loadAssets(api, assetModules, addresses);
+    })
+  );
 
   constructor() {
-    this.updateApiUrl(settings.apiUrl);
+    // disconnect previous api instance
+    this._api.pipe(
+      pairwise(),
+      tap(([prev]) => prev.disconnect()),
+    ).subscribe();
   }
 
-  public updateApiUrl(newUrl: string) {
-    if (this._api) {
-      this._api.disconnect();
-    }
-    this._api = new ApiPromise(new WsProvider(newUrl));
-    this._assetModules = defaultAssetModules;
-    this._modulesDetecting = new Promise(resolve => {
-      this._api.once('ready', (api: ApiPromise) => {
-        this.detectAssetModules(api);
-        resolve();
-      });
-    })
+  public updateApiUrl(url: string) {
+    this._apiUrl.next(url);
   }
 
-  private detectAssetModules(api: ApiPromise): void {
-    if (this._api === api) {
-      this._assetModules = (Object.keys(moduleInterfaces) as ModuleType[])
-        .reduce<Record<ModuleType, string[]>>((acc, cur) => {
-          return {
-            ...acc,
-            [cur]: findInterfaceImplements(api, moduleInterfaces[cur]),
-          }
-        }, defaultAssetModules);
-    }
+  private getAssetModules(api: ApiPromise): Record<ModuleType, string[]> {
+    return (Object.keys(moduleInterfaces) as ModuleType[])
+      .reduce<Record<ModuleType, string[]>>((acc, cur) => {
+        return {
+          ...acc,
+          [cur]: findInterfaceImplements(api, moduleInterfaces[cur]),
+        }
+      }, defaultAssetModules);
   }
 
-  public async loadAssets(address: string): Promise<IAsset[]> {
-    await this._modulesDetecting;
+  public async loadAssets(api: ApiPromise, assetModules: Record<ModuleType, string[]>, addresses: string[]): Promise<Record<string, IAsset[]>> {
+    const allAssets = (await Promise.all(
+      addresses.map(async address => ({
+        address,
+        assets: await this.loadAssetsByAddress(api, assetModules, address),
+      })),
+    ))
 
+    return allAssets.reduce((acc, {address, assets}) => ({...acc, [address]: assets}), {});
+  }
+
+  public async loadAssetsByAddress(api: ApiPromise, assetModules: Record<ModuleType, string[]>, address: string): Promise<IAsset[]> {
     return Promise.all(
-      this._assetModules.balance.map(this.loadBalanceAssets.bind(this, address)),
+      assetModules.balance.map(this.loadBalanceAssets.bind(this, api, address)),
     )
   }
 
-  private async loadBalanceAssets(address: string, fromModule: string): Promise<IAsset> {
-    const query = this._api.query[fromModule];
+  private async loadBalanceAssets(api: ApiPromise, address: string, fromModule: string): Promise<IAsset> {
+    const query = api.query[fromModule];
 
     const [free = ZERO_BALANCE, locks = ZERO_VEC, reserved = ZERO_BALANCE]: [Balance?, Vec<BalanceLock>?, Balance?] =
       await Promise.all([

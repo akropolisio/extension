@@ -12,8 +12,9 @@ import settings from '@polkadot/ui-settings';
 import { setAddressPrefix } from '@polkadot/util-crypto';
 
 import { Loading } from '../components';
-import { AccountContext, ActionContext, AuthorizeContext, SigningContext } from '../components/contexts';
-import { subscribeAccounts, subscribeAuthorize, subscribeSigning } from '../messaging';
+import { AssetsFromCtx } from '../components/types';
+import { AccountContext, ActionContext, AuthorizeContext, SigningContext, AssetsContext } from '../components/contexts';
+import { subscribeAccounts, subscribeAuthorize, subscribeSigning, subscribeAssets } from '../messaging';
 import Accounts from './Accounts';
 import Authorize from './Authorize';
 import Create from './Create';
@@ -35,6 +36,7 @@ export default function Popup(): React.ReactElement<{}> {
   const [accounts, setAccounts] = useState<null | KeyringJson[]>(null);
   const [authRequests, setAuthRequests] = useState<null | AuthorizeRequest[]>(null);
   const [signRequests, setSignRequests] = useState<null | SigningRequest[]>(null);
+  const [assets, setAssets] = useState<null | AssetsFromCtx>(null);
   const [isWelcomeDone, setWelcomeDone] = useState(false);
 
   const onAction = (to?: string): void => {
@@ -49,7 +51,8 @@ export default function Popup(): React.ReactElement<{}> {
     Promise.all([
       subscribeAccounts(setAccounts),
       subscribeAuthorize(setAuthRequests),
-      subscribeSigning(setSignRequests)
+      subscribeSigning(setSignRequests),
+      subscribeAssets(setAssets),
     ]).catch(console.error);
     onAction();
   }, []);
@@ -68,14 +71,16 @@ export default function Popup(): React.ReactElement<{}> {
         <AccountContext.Provider value={accounts}>
           <AuthorizeContext.Provider value={authRequests}>
             <SigningContext.Provider value={signRequests}>
-              <Switch>
-                <Route path='/account/create' component={Create} />
-                <Route path='/account/forget/:address' component={Forget} />
-                <Route path='/account/import' component={Import} />
-                <Route path='/assets/:address' component={Assets} />
-                <Route path='/settings' component={Settings} />
-                <Route exact path='/' component={Root} />
-              </Switch>
+              <AssetsContext.Provider value={assets}>
+                <Switch>
+                  <Route path='/account/create' component={Create} />
+                  <Route path='/account/forget/:address' component={Forget} />
+                  <Route path='/account/import' component={Import} />
+                  <Route path='/assets/:address' component={Assets} />
+                  <Route path='/settings' component={Settings} />
+                  <Route exact path='/' component={Root} />
+                </Switch>
+              </AssetsContext.Provider>
             </SigningContext.Provider>
           </AuthorizeContext.Provider>
         </AccountContext.Provider>
