@@ -8,12 +8,13 @@ import { AccountsFromCtx } from './types';
 
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import styled from 'styled-components';
+import cn from 'classnames';
 import Identicon from '@polkadot/react-identicon';
 import settings from '@polkadot/ui-settings';
 
-import IconBox from './IconBox';
 import { withAccounts, AssetsContext } from './contexts';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import Box from './Box';
 
 interface Props {
   accounts: AccountsFromCtx;
@@ -22,11 +23,12 @@ interface Props {
   children?: React.ReactNode;
   className?: string;
   name?: React.ReactNode | null;
-  theme?: 'polkadot' | 'substrate';
+  variant?: 'polkadot' | 'substrate';
+  boxTheme?: 'light' | 'dark';
   onClick?(): void;
 }
 
-function Address({ accounts, address, children, className, name, theme = 'polkadot', withBalance = false, onClick }: Props): React.ReactElement<Props> {
+function Address({ accounts, address, children, className, name, variant = 'polkadot', withBalance = false, onClick, boxTheme }: Props): React.ReactElement<Props> {
   const [account, setAccount] = useState<KeyringJson | null>(null);
   const [formatted, setFormatted] = useState<string | null>(null);
 
@@ -52,37 +54,55 @@ function Address({ accounts, address, children, className, name, theme = 'polkad
   }, [address]);
 
   return (
-    <IconBox
-      className={className}
-      icon={
-        <Identicon
-          className='icon'
-          size={64}
-          theme={theme}
-          value={address}
-        />
-      }
-      intro={
-        <div onClick={onClick} className={onClick ? 'clickable' : undefined}>
-          <div className='name'>{name || (account && account.meta.name) || '<unknown>'}</div>
-          <div className='address'>{formatted || '<unknown>'}</div>
-          {withBalance && (
-            <div className='balance'>
-              {balance
-                ? `${balance.free} ${balance.symbol}`
-                : 'Loading ...'
-              }
-            </div>
-          )}
+    <Box className={className} boxTheme={boxTheme}>
+      <Identicon
+        className='icon'
+        size={64}
+        theme={variant}
+        value={address}
+      />
+      <div onClick={onClick} className={cn('address-content', { clickable: !!onClick })}>
+        <div className='name'>{name || (account && account.meta.name) || '<unknown>'}</div>
+        <div className='address'>{formatted || '<unknown>'}</div>
+        {withBalance && (
+          <div className='balance'>
+            {balance
+              ? `${balance.free} ${balance.symbol}`
+              : 'Loading ...'
+            }
+          </div>
+        )}
+      </div>
+      {!!children && (
+        <div className="additional-content">
+          {children}
         </div>
-      }
-    >
-      {children}
-    </IconBox>
+      )}
+    </Box>
   );
 }
 
 export default withAccounts(styled(Address)`
+  display: flex;
+  flex-wrap: wrap;
+
+  .icon {
+    margin-right: 16px;
+
+    & svg circle:first-child {
+      fill: white;
+    }
+  }
+
+  .address-content {
+    width: 0;
+    flex-grow: 1;
+  }
+
+  .additional-content {
+    width: 100%;
+  }
+
   .address {
     opacity: 0.5;
     overflow: hidden;

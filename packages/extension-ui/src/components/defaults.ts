@@ -8,7 +8,7 @@ const LINK_COLOR = '#3367d6';
 const TEXT_COLOR = '#4d4e4f';
 
 const defaults = {
-  borderRadius: '0.25rem',
+  borderRadius: '4px',
   btnBg: '#613AAF',
   btnBgDanger: DANGER_COLOR,
   btnShadow: '0px 4px 12px rgba(20, 12, 38, 0.2)',
@@ -20,7 +20,8 @@ const defaults = {
   boxBorder: 'none', // '0.25rem solid #e2e1e0',
   boxMargin: '0.75rem 0',
   boxPadding: '0 0.25rem',
-  boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+  boxShadow: 'none',
+  boxBg: '#F7F5FB',
   color: TEXT_COLOR,
   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
   fontSize: '1rem',

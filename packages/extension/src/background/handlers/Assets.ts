@@ -40,7 +40,7 @@ export default class Assets {
 
   private readonly _api: Observable<ApiPromise> = this._apiUrl.asObservable().pipe(
     concatMap(async url => {
-      const api = new ApiPromise(new WsProvider(url));
+      const api = new ApiPromise({ provider: new WsProvider(url) });
       await new Promise(resolve => api.once('ready', resolve));
       return api;
     }),
@@ -91,7 +91,7 @@ export default class Assets {
       })),
     ))
 
-    return allAssets.reduce((acc, {address, assets}) => ({...acc, [address]: assets}), {});
+    return allAssets.reduce((acc, { address, assets }) => ({ ...acc, [address]: assets }), {});
   }
 
   public async loadAssetsByAddress(api: ApiPromise, assetModules: Record<ModuleType, string[]>, address: string): Promise<IAsset[]> {

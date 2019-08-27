@@ -20,7 +20,7 @@ function Assets(props: Props): React.ReactElement<Props> {
   return (
     <Layout actions={['Action 1', 'Action 2']}>
       <Layout.Content variant="primary">
-        <Address withBalance address={address} />
+        <Address withBalance address={address} boxTheme="dark" />
       </Layout.Content>
       <Layout.Content variant="secondary">
         <Link to='/' className='back-link'>{unicode.BACK} Back</Link>

@@ -4,30 +4,41 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import cn from 'classnames';
 
 import defaults from './defaults';
 
 interface Props {
   children: React.ReactNode;
+  boxTheme?: 'light' | 'dark';
   className?: string;
 }
 
-function Box ({ children, className }: Props): React.ReactElement<Props> {
+function Box({ children, className, boxTheme = 'light' }: Props): React.ReactElement<Props> {
   return (
-    <article className={className}>
+    <article className={cn(className, { [`box-theme_${boxTheme}`]: true })}>
       {children}
     </article>
   );
 }
 
 export default styled(Box)`
-  background: white;
   border: ${defaults.boxBorder};
   border-radius: ${defaults.borderRadius};
   box-shadow: ${defaults.boxShadow};
-  color: ${defaults.color};
   font-family: ${defaults.fontFamily};
   font-size: ${defaults.fontSize};
   margin: ${defaults.boxMargin};
   padding: 0.75rem 1rem;
+
+  &.box-theme_ {
+    &light {
+      background: ${defaults.boxBg};
+      color: ${defaults.color};
+    }
+    &dark {
+      background: transparent;
+      color: white;
+    }
+  }
 `;
