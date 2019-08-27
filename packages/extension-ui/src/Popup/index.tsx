@@ -24,6 +24,7 @@ import Settings from './Settings';
 import Signing from './Signing';
 import Welcome from './Welcome';
 import Assets from './Assets';
+import { routes } from '../routes';
 
 // load the ui settings, actually only used for address prefix atm
 // probably overkill (however can replace once we have actual others)
@@ -73,11 +74,11 @@ export default function Popup(): React.ReactElement<{}> {
             <SigningContext.Provider value={signRequests}>
               <AssetsContext.Provider value={assets}>
                 <Switch>
-                  <Route path='/account/create' component={Create} />
-                  <Route path='/account/forget/:address' component={Forget} />
-                  <Route path='/account/import' component={Import} />
-                  <Route path='/assets/:address' component={Assets} />
-                  <Route path='/settings' component={Settings} />
+                  <Route path={routes.account.create.getRoutePath()} component={Create} />
+                  <Route path={routes.account.forget.address.getRoutePath()} component={Forget} />
+                  <Route path={routes.account.import.getRoutePath()} component={Import} />
+                  <Route path={routes.assets.address.getRoutePath()} component={Assets} />
+                  <Route path={routes.settings.getRoutePath()} component={Settings} />
                   <Route exact path='/' component={Root} />
                 </Switch>
               </AssetsContext.Provider>

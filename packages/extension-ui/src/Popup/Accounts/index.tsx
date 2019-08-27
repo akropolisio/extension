@@ -7,6 +7,7 @@ import { AccountsFromCtx } from '../../components/types';
 import React from 'react';
 
 import { Button, Tip, withAccounts, withOnAction } from '../../components';
+import { routes } from '../../routes';
 import Layout from '../Layout';
 import Account from './Account';
 
@@ -17,14 +18,14 @@ interface Props {
 
 function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
   const _onAddressClick = React.useCallback((address: string) => {
-    onAction(`assets/${address}`)
+    onAction(routes.assets.address.getRedirectPath({ address }))
   }, []);
 
   return (
     <Layout
       actions={[
-        <Button key="Create" label='Create account' to='/account/create' />,
-        <Button key="Import" label='Import account' to='/account/import' />,
+        <Button key="Create" label='Create account' to={routes.account.create.getRedirectPath()} />,
+        <Button key="Import" label='Import account' to={routes.account.import.getRedirectPath()} />,
       ]}
     >
       <Layout.Content variant="secondary">

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Content from './Content';
 import { Link } from '../../components';
 import { SettingsIcon } from '../../components/icons';
+import { routes } from '../../routes';
 
 interface IProps {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ function Layout(props: IProps) {
     <div className={className}>
       <div className="header">
         <span>Selector</span>
-        <Link to="/settings">
+        <Link to={routes.settings.getRedirectPath()}>
           <SettingsIcon color="primary" className="settings-icon" />
         </Link>
       </div>
