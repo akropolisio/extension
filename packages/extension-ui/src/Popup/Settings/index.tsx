@@ -8,9 +8,9 @@ import React, { useState } from 'react';
 import settings from '@polkadot/ui-settings';
 import { setAddressPrefix } from '@polkadot/util-crypto';
 
-import { Dropdown, Header, Input, Button } from '../../components';
+import { Dropdown, Input, Button } from '../../components';
 import { notifyApiUrlChanged } from '../../messaging';
-import { Back } from '../../partials';
+import Layout from '../Layout';
 
 const prefixOptions = settings.availablePrefixes.map(({ text, value }): { text: string; value: string } => ({
   text: value === -1
@@ -67,31 +67,33 @@ export default function Settings(): React.ReactElement<{}> {
   };
 
   return (
-    <div>
-      <Header label='settings' />
-      <Back />
-      <Dropdown
-        label='display addresses formatted for'
-        onChange={_onChangePrefix}
-        options={prefixOptions}
-        value={`${prefix}`}
-      />
-      <Dropdown
-        label='remote node/endpoint to connect to'
-        onChange={_onChangeUrl}
-        options={apiUrlOptions}
-        value={selectedApiUrl}
-      />
-      {!selectedApiUrl && (<>
-        <Input
-          label='custom endpoint URL'
-          value={customApiUrl}
-          onChange={_onChangeCustomUrl}
+    <Layout
+      actions={[<Button key='Cancel' label='Cancel' to="/" />]}
+    >
+      <Layout.Content variant="secondary">
+        <Dropdown
+          label='display addresses formatted for'
+          onChange={_onChangePrefix}
+          options={prefixOptions}
+          value={`${prefix}`}
         />
-        {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (
-          <Button onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
-        )}
-      </>)}
-    </div>
+        <Dropdown
+          label='remote node/endpoint to connect to'
+          onChange={_onChangeUrl}
+          options={apiUrlOptions}
+          value={selectedApiUrl}
+        />
+        {!selectedApiUrl && (<>
+          <Input
+            label='custom endpoint URL'
+            value={customApiUrl}
+            onChange={_onChangeCustomUrl}
+          />
+          {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (
+            <Button onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
+          )}
+        </>)}
+      </Layout.Content>
+    </Layout>
   );
 }

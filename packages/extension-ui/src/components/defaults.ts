@@ -9,10 +9,12 @@ const TEXT_COLOR = '#4d4e4f';
 
 const defaults = {
   borderRadius: '0.25rem',
-  btnBg: TEXT_COLOR, // LINK_COLOR,
+  btnBg: '#613AAF',
   btnBgDanger: DANGER_COLOR,
+  btnShadow: '0px 4px 12px rgba(20, 12, 38, 0.2)',
   btnBorder: `0 solid `,
-  btnColor: '#f5f6f7',
+  btnColorVariantContained: '#f5f6f7',
+  btnColorVariantText: '#1D1135',
   btnColorDanger: '#f5f6f7',
   btnPadding: '0.75rem 1rem',
   boxBorder: 'none', // '0.25rem solid #e2e1e0',

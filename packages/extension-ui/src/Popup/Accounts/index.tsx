@@ -6,7 +6,8 @@ import { AccountsFromCtx } from '../../components/types';
 
 import React from 'react';
 
-import { Button, Header, Link, Tip, unicode, withAccounts, withOnAction } from '../../components';
+import { Button, Tip, withAccounts, withOnAction } from '../../components';
+import Layout from '../Layout';
 import Account from './Account';
 
 interface Props {
@@ -20,31 +21,26 @@ function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
   }, []);
 
   return (
-    <div>
-      <Header
-        label='accounts'
-        labelExtra={<Link to='/settings'>Settings {unicode.FWD}</Link>}
-      />
-      {
-        (accounts.length === 0)
-          ? <Tip header='add accounts' type='warn'>You currently don&apos;t have any accounts. Either create a new account or if you have an existing account you wish to use, import it with the seed phrase</Tip>
-          : accounts.map(({ address }): React.ReactNode => (
-            <Account
-              address={address}
-              onClick={_onAddressClick}
-              key={address}
-            />
-          ))
-      }
-      <Button
-        label='I want to create a new account with a new seed'
-        to='/account/create'
-      />
-      <Button
-        label='I have a pre-existing seed, import the account'
-        to='/account/import'
-      />
-    </div>
+    <Layout
+      actions={[
+        <Button key="Create" label='Create account' to='/account/create' />,
+        <Button key="Import" label='Import account' to='/account/import' />,
+      ]}
+    >
+      <Layout.Content variant="secondary">
+        {
+          (accounts.length === 0)
+            ? <Tip header='add accounts' type='warn'>You currently don&apos;t have any accounts. Either create a new account or if you have an existing account you wish to use, import it with the seed phrase</Tip>
+            : accounts.map(({ address }): React.ReactNode => (
+              <Account
+                address={address}
+                onClick={_onAddressClick}
+                key={address}
+              />
+            ))
+        }
+      </Layout.Content>
+    </Layout>
   );
 }
 

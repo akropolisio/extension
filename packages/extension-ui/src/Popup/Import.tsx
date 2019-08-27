@@ -6,15 +6,16 @@ import { OnActionFromCtx } from '../components/types';
 
 import React, { useState } from 'react';
 
-import { Address, Button, Header, TextArea, withOnAction } from '../components';
+import { Address, Button, TextArea, withOnAction } from '../components';
 import { createAccount, validateSeed } from '../messaging';
-import { Back, Name, Password } from '../partials';
+import { Name, Password } from '../partials';
+import Layout from './Layout';
 
 interface Props {
   onAction: OnActionFromCtx;
 }
 
-function Import ({ onAction }: Props): React.ReactElement<Props> {
+function Import({ onAction }: Props): React.ReactElement<Props> {
   const [account, setAccount] = useState<null | { address: string; seed: string }>(null);
   const [name, setName] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
@@ -35,29 +36,26 @@ function Import ({ onAction }: Props): React.ReactElement<Props> {
   };
 
   return (
-    <div>
-      <Header label='import account' />
-      <Back />
-      <TextArea
-        isError={!account}
-        isFocussed
-        label={`existing 12 or 24-word mnemonic seed`}
-        onChange={onChangeSeed}
-      />
-      {account && <Name onChange={setName} />}
-      {account && name && <Password onChange={setPassword} />}
-      {account && name && password && (
-        <Address
-          address={account.address}
-          name={name}
-        >
-          <Button
-            label='Add the account with the supplied seed'
-            onClick={onCreate}
-          />
-        </Address>
-      )}
-    </div>
+    <Layout
+      actions={[
+        <Button key='Cancel' label='Cancel' to="/" variant="text" />,
+        <Button key='Import' label='Import' onClick={onCreate} />
+      ]}
+    >
+      <Layout.Content variant="secondary">
+        <TextArea
+          isError={!account}
+          isFocussed
+          label={`existing 12 or 24-word mnemonic seed`}
+          onChange={onChangeSeed}
+        />
+        {account && <Name onChange={setName} />}
+        {account && name && <Password onChange={setPassword} />}
+        {account && name && password && (
+          <Address address={account.address} name={name} />
+        )}
+      </Layout.Content>
+    </Layout>
   );
 }
 

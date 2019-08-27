@@ -6,9 +6,10 @@ import { OnActionFromCtx } from '../components/types';
 
 import React, { useState, useEffect } from 'react';
 
-import { Address, Button, Header, Loading, TextArea, withOnAction } from '../components';
+import { Address, Button, Loading, TextArea, withOnAction } from '../components';
 import { createAccount, createSeed } from '../messaging';
-import { Back, Name, Password } from '../partials';
+import { Name, Password } from '../partials';
+import Layout from './Layout';
 
 interface Props {
   onAction: OnActionFromCtx;
@@ -36,35 +37,29 @@ function Create({ onAction }: Props): React.ReactElement<Props> {
   };
 
   return (
-    <div>
-      <Header label='create account' />
-      <Back />
-      <Loading>{account && (
-        <>
-          <TextArea
-            isReadOnly
-            label={`generated 12-word mnemonic seed`}
-            value={account.seed}
-          />
-          <Name
-            isFocussed
-            onChange={setName}
-          />
-          {name && <Password onChange={setPassword} />}
-          {name && password && (
-            <Address
-              address={account.address}
-              name={name}
-            >
-              <Button
-                label='Add the account with the generated seed'
-                onClick={onCreate}
-              />
-            </Address>
-          )}
-        </>
-      )}</Loading>
-    </div>
+    <Layout
+      actions={[
+        <Button key='Cancel' label='Cancel' to="/" variant="text" />,
+        <Button key='Create' label='Create' onClick={onCreate} />
+      ]}
+    >
+      <Layout.Content variant="secondary">
+        <Loading>{account && (
+          <>
+            <TextArea
+              isReadOnly
+              label={`generated 12-word mnemonic seed`}
+              value={account.seed}
+            />
+            <Name isFocussed onChange={setName} />
+            {name && <Password onChange={setPassword} />}
+            {name && password && (
+              <Address address={account.address} name={name} />
+            )}
+          </>
+        )}</Loading>
+      </Layout.Content>
+    </Layout>
   );
 }
 
