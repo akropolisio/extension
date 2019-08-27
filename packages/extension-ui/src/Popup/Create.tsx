@@ -6,7 +6,7 @@ import { OnActionFromCtx } from '../components/types';
 
 import React, { useState, useEffect } from 'react';
 
-import { Address, Button, Loading, TextArea, withOnAction } from '../components';
+import { Address, Button, Loading, TextArea, withOnAction, LinkButton } from '../components';
 import { createAccount, createSeed } from '../messaging';
 import { Name, Password } from '../partials';
 import Layout from './Layout';
@@ -39,8 +39,8 @@ function Create({ onAction }: Props): React.ReactElement<Props> {
   return (
     <Layout
       actions={[
-        <Button key='Cancel' label='Cancel' to="/" variant="text" />,
-        <Button key='Create' label='Create' onClick={onCreate} />
+        <LinkButton key='Cancel' to="/" color="primary">Cancel</LinkButton>,
+        <Button key='Create' variant='contained' color='primary' onClick={onCreate}>Create</Button>
       ]}
     >
       <Layout.Content variant="secondary">

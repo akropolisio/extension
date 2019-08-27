@@ -20,7 +20,7 @@ interface Props {
   url: string;
 }
 
-function Request ({ authId, className, isFirst, onAction, request: { origin }, url }: Props): React.ReactElement<Props> {
+function Request({ authId, className, isFirst, onAction, request: { origin }, url }: Props): React.ReactElement<Props> {
   const onApprove = (): Promise<void> =>
     approveAuthRequest(authId)
       .then((): void => onAction())
@@ -50,9 +50,12 @@ function Request ({ authId, className, isFirst, onAction, request: { origin }, u
         <>
           <Tip header='access' type='warn'>Only approve this request if you trust the application. Approving gives the application access to the addresses of your accounts.</Tip>
           <Button
-            label='Yes, allow this application access'
+            variant='contained'
+            color='primary'
             onClick={onApprove}
-          />
+          >
+            Yes, allow this application access
+          </Button>
         </>
       )}
     </IconBox>

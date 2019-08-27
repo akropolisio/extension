@@ -6,7 +6,7 @@ import { AccountsFromCtx } from '../../components/types';
 
 import React from 'react';
 
-import { Button, Tip, withAccounts, withOnAction } from '../../components';
+import { Tip, withAccounts, withOnAction, LinkButton } from '../../components';
 import { routes } from '../../routes';
 import Layout from '../Layout';
 import Account from './Account';
@@ -24,8 +24,8 @@ function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
   return (
     <Layout
       actions={[
-        <Button key="Create" label='Create account' to={routes.account.create.getRedirectPath()} />,
-        <Button key="Import" label='Import account' to={routes.account.import.getRedirectPath()} />,
+        <LinkButton key="Create" color="primary" variant="contained" to={routes.account.create.getRedirectPath()}>Create account</LinkButton>,
+        <LinkButton key="Import" color="primary" variant="contained" to={routes.account.import.getRedirectPath()}>Import account</LinkButton>,
       ]}
     >
       <Layout.Content variant="secondary">

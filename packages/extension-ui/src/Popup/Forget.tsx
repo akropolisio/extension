@@ -7,7 +7,7 @@ import { OnActionFromCtx } from '../components/types';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 
-import { Address, Button, Tip, withOnAction } from '../components';
+import { Address, Button, Tip, withOnAction, LinkButton } from '../components';
 import { forgetAccount } from '../messaging';
 import Layout from './Layout';
 
@@ -24,12 +24,12 @@ function Forget({ match: { params: { address } }, onAction }: Props): React.Reac
   return (
     <Layout
       actions={[
-        <Button key='Cancel' label='Cancel' to="/" variant="text" />,
-        <Button isDanger key='Forget' label='Forget' onClick={onClick} />
+        <LinkButton key='Cancel' to="/" color="primary">Cancel</LinkButton>,
+        <Button isDanger key='Forget' variant='contained' color='primary' onClick={onClick}>Forget</Button>
       ]}
     >
       <Layout.Content variant="primary">
-        <Address address={address} />
+        <Address address={address} boxTheme="dark" />
       </Layout.Content>
       <Layout.Content variant="secondary">
         <Tip header='danger' type='error'>You are about to remove the account. This means that you will not be able to access it via this extension anymore. If you wish to recover it, you would need to use the seed.</Tip>

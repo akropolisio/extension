@@ -11,7 +11,7 @@ interface Props {
   onSign: (password: string) => Promise<void>;
 }
 
-export default function Unlock ({ className, onSign }: Props): React.ReactElement<Props> {
+export default function Unlock({ className, onSign }: Props): React.ReactElement<Props> {
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
 
@@ -35,9 +35,12 @@ export default function Unlock ({ className, onSign }: Props): React.ReactElemen
         type='password'
       />
       <Button
-        label='Sign the transaction'
+        variant='contained'
+        color='primary'
         onClick={onClick}
-      />
+      >
+        Sign the transaction
+      </Button>
     </div>
   );
 }

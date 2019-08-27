@@ -12,7 +12,7 @@ interface Props {
   onAction: OnActionFromCtx;
 }
 
-function Welcome ({ onAction }: Props): React.ReactElement<Props> {
+function Welcome({ onAction }: Props): React.ReactElement<Props> {
   const onClick = (): void => {
     window.localStorage.setItem('welcome_read', 'ok');
     onAction();
@@ -30,9 +30,12 @@ function Welcome ({ onAction }: Props): React.ReactElement<Props> {
         </ul>
         ... we are not in the information collection business (even anonymized).
         <Button
-          label='Understood, let me continue'
+          variant="contained"
+          color="primary"
           onClick={onClick}
-        />
+        >
+          Understood, let me continue
+        </Button>
       </Box>
     </div>
   );

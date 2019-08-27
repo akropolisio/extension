@@ -10,6 +10,8 @@ import React, { useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router';
 import settings from '@polkadot/ui-settings';
 import { setAddressPrefix } from '@polkadot/util-crypto';
+import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 
 import { Loading } from '../components';
 import { AssetsFromCtx } from '../components/types';
@@ -32,6 +34,14 @@ const { prefix } = settings.get();
 
 // FIXME Duplicated in Settings, horrible...
 setAddressPrefix((prefix === -1 ? 42 : prefix) as Prefix);
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#613AAF',
+    },
+  },
+});
 
 export default function Popup(): React.ReactElement<{}> {
   const [accounts, setAccounts] = useState<null | KeyringJson[]>(null);
@@ -68,24 +78,26 @@ export default function Popup(): React.ReactElement<{}> {
 
   return (
     <Loading>{accounts && authRequests && signRequests && (
-      <ActionContext.Provider value={onAction}>
-        <AccountContext.Provider value={accounts}>
-          <AuthorizeContext.Provider value={authRequests}>
-            <SigningContext.Provider value={signRequests}>
-              <AssetsContext.Provider value={assets}>
-                <Switch>
-                  <Route path={routes.account.create.getRoutePath()} component={Create} />
-                  <Route path={routes.account.forget.address.getRoutePath()} component={Forget} />
-                  <Route path={routes.account.import.getRoutePath()} component={Import} />
-                  <Route path={routes.assets.address.getRoutePath()} component={Assets} />
-                  <Route path={routes.settings.getRoutePath()} component={Settings} />
-                  <Route exact path='/' component={Root} />
-                </Switch>
-              </AssetsContext.Provider>
-            </SigningContext.Provider>
-          </AuthorizeContext.Provider>
-        </AccountContext.Provider>
-      </ActionContext.Provider>
+      <ThemeProvider theme={theme}>
+        <ActionContext.Provider value={onAction}>
+          <AccountContext.Provider value={accounts}>
+            <AuthorizeContext.Provider value={authRequests}>
+              <SigningContext.Provider value={signRequests}>
+                <AssetsContext.Provider value={assets}>
+                  <Switch>
+                    <Route path={routes.account.create.getRoutePath()} component={Create} />
+                    <Route path={routes.account.forget.address.getRoutePath()} component={Forget} />
+                    <Route path={routes.account.import.getRoutePath()} component={Import} />
+                    <Route path={routes.assets.address.getRoutePath()} component={Assets} />
+                    <Route path={routes.settings.getRoutePath()} component={Settings} />
+                    <Route exact path='/' component={Root} />
+                  </Switch>
+                </AssetsContext.Provider>
+              </SigningContext.Provider>
+            </AuthorizeContext.Provider>
+          </AccountContext.Provider>
+        </ActionContext.Provider>
+      </ThemeProvider>
     )}</Loading>
   );
 }
