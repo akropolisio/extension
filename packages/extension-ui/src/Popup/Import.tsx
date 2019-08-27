@@ -16,12 +16,12 @@ interface Props {
 }
 
 function Import({ onAction }: Props): React.ReactElement<Props> {
-  const [account, setAccount] = useState<null | { address: string; seed: string }>(null);
+  const [account, setAccount] = useState<null | { address: string; suri: string }>(null);
   const [name, setName] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
 
-  const onChangeSeed = (seed: string): Promise<void> =>
-    validateSeed(seed)
+  const onChangeSeed = (suri: string): Promise<void> =>
+    validateSeed(suri)
       .then(setAccount)
       .catch((): void => setAccount(null));
 
@@ -29,7 +29,7 @@ function Import({ onAction }: Props): React.ReactElement<Props> {
   const onCreate = (): void => {
     // this should always be the case
     if (name && password && account) {
-      createAccount(name, password, account.seed)
+      createAccount(name, password, account.suri)
         .then((): void => onAction('/'))
         .catch(console.error);
     }
@@ -46,7 +46,7 @@ function Import({ onAction }: Props): React.ReactElement<Props> {
         <TextArea
           isError={!account}
           isFocussed
-          label={`existing 12 or 24-word mnemonic seed`}
+          label='existing 12 or 24-word mnemonic seed'
           onChange={onChangeSeed}
         />
         {account && <Name onChange={setName} />}

@@ -48,7 +48,7 @@ function Create({ onAction }: Props): React.ReactElement<Props> {
           <>
             <TextArea
               isReadOnly
-              label={`generated 12-word mnemonic seed`}
+              label='generated 12-word mnemonic seed'
               value={account.seed}
             />
             <Name isFocussed onChange={setName} />

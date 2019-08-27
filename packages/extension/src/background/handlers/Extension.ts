@@ -10,7 +10,7 @@ import { AuthorizeRequest, MessageTypes, MessageAccountCreate, MessageAccountEdi
 import keyring from '@polkadot/ui-keyring';
 import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
 import { createType } from '@polkadot/types';
-import { mnemonicGenerate, mnemonicValidate } from '@polkadot/util-crypto';
+import { keyExtractSuri, mnemonicGenerate, mnemonicValidate } from '@polkadot/util-crypto';
 import { assert } from '@polkadot/util';
 
 import State from './State';
@@ -126,13 +126,15 @@ export default class Extension {
     };
   }
 
-  private seedValidate ({ seed, type }: MessageSeedValidate): MessageSeedValidateResponse {
-    assert(SEED_LENGTHS.includes(seed.split(' ').length), `Mnemonic needs to contain ${SEED_LENGTHS.join(', ')} words`);
-    assert(mnemonicValidate(seed), 'Not a valid mnemonic seed');
+  private seedValidate ({ suri, type }: MessageSeedValidate): MessageSeedValidateResponse {
+    const { phrase } = keyExtractSuri(suri);
+
+    assert(SEED_LENGTHS.includes(phrase.split(' ').length), `Mnemonic needs to contain ${SEED_LENGTHS.join(', ')} words`);
+    assert(mnemonicValidate(phrase), 'Not a valid mnemonic seed');
 
     return {
-      address: keyring.createFromUri(seed, {}, type).address,
-      seed
+      address: keyring.createFromUri(suri, {}, type).address,
+      suri
     };
   }
 

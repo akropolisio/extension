@@ -12,7 +12,7 @@ const defaults = {
   btnBg: '#613AAF',
   btnBgDanger: DANGER_COLOR,
   btnShadow: '0px 4px 12px rgba(20, 12, 38, 0.2)',
-  btnBorder: `0 solid `,
+  btnBorder: '0 solid ',
   btnColorVariantContained: '#f5f6f7',
   btnColorVariantText: '#1D1135',
   btnColorDanger: '#f5f6f7',
