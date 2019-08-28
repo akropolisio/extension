@@ -13,6 +13,7 @@ interface IProps {
   variant?: 'text' | 'outlined' | 'contained';
   size?: 'small' | 'medium' | 'large';
   children?: React.ReactNode;
+  className?: string;
 }
 
 export default function LinkButton({ variant = 'contained', color = 'primary', ...rest }: IProps) {

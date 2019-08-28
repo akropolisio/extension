@@ -101,12 +101,17 @@ export default withAccounts(styled(Address)`
 
   .additional-content {
     width: 100%;
+    padding-top: 0.5rem;
   }
 
   .address {
     opacity: 0.5;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .balance {
+    padding-top: 0.5rem;
   }
 
   .name {

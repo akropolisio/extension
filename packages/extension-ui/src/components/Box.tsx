@@ -28,7 +28,6 @@ export default styled(Box)`
   box-shadow: ${defaults.boxShadow};
   font-family: ${defaults.fontFamily};
   font-size: ${defaults.fontSize};
-  margin: ${defaults.boxMargin};
   padding: 0.75rem 1rem;
 
   &.box-theme_ {

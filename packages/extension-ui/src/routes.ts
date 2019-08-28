@@ -9,7 +9,10 @@ const rawTree = {
     import: null,
   },
   assets: {
-    address: getParam(null),
+    address: getParam({
+      buy: null,
+      send: null,
+    }),
   },
   settings: null,
 }

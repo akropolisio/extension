@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import Content from './Content';
+import Content, { ContentProps } from './Content';
 import { Link } from '../../components';
 import { SettingsIcon } from '../../components/icons';
 import { routes } from '../../routes';
@@ -80,4 +80,5 @@ type ComponentType = typeof Component & {
 
 (Component as ComponentType).Content = Content;
 
+export { ContentProps };
 export default Component as ComponentType;

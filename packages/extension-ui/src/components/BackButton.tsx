@@ -4,7 +4,10 @@ import Button from './Button';
 import { ButtonProps } from '@material-ui/core/Button';
 
 function BackButton(props: ButtonProps & RouteComponentProps) {
-  const { history, children, variant = 'outlined', color = 'primary', ...rest } = props;
+  const {
+    history, location, match, staticContext, children, variant = 'outlined', color = 'primary',
+    ...rest } = props;
+
   return (
     <Button {...rest} variant={variant} color={color} onClick={history.goBack}>
       {children || 'Back'}

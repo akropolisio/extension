@@ -6,7 +6,7 @@ import { AccountsFromCtx } from '../../components/types';
 
 import React from 'react';
 
-import { Tip, withAccounts, withOnAction, LinkButton } from '../../components';
+import { Tip, withAccounts, withOnAction, LinkButton, Grid } from '../../components';
 import { routes } from '../../routes';
 import Layout from '../Layout';
 import Account from './Account';
@@ -32,13 +32,15 @@ function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
         {
           (accounts.length === 0)
             ? <Tip header='add accounts' type='warn'>You currently don&apos;t have any accounts. Either create a new account or if you have an existing account you wish to use, import it with the seed phrase</Tip>
-            : accounts.map(({ address }): React.ReactNode => (
-              <Account
-                address={address}
-                onClick={_onAddressClick}
-                key={address}
-              />
-            ))
+            : (
+              <Grid container spacing={2}>
+                {accounts.map(({ address }): React.ReactNode => (
+                  <Grid item xs={12} key={address}>
+                    <Account address={address} onClick={_onAddressClick} />
+                  </Grid>
+                ))}
+              </Grid>
+            )
         }
       </Layout.Content>
     </Layout>

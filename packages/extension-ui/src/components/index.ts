@@ -18,8 +18,12 @@ export { default as Loading } from './Loading';
 export { default as TextArea } from './TextArea';
 export { default as Tip } from './Tip';
 export { default as View } from './View';
+export { default as ComingSoon } from './ComingSoon';
 
 export { default as Grid } from '@material-ui/core/Grid';
+export { default as Tabs } from '@material-ui/core/Tabs';
+export { default as Tab } from '@material-ui/core/Tab';
+export { default as TextField } from '@material-ui/core/TextField';
 
 export * from './contexts';
 export { default as defaults } from './defaults';

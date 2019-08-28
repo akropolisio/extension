@@ -6,16 +6,17 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import { Address, Grid } from '../../components';
-import Layout from '../Layout';
+import Layout, { ContentProps } from '../Layout';
 
 interface Props extends RouteComponentProps<{ address: string }> {
   addressActions?: React.ReactNode[];
   mainActions?: React.ReactNode[];
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  contentProps?: Partial<ContentProps>;
 }
 
 function BaseLayout(props: Props): React.ReactElement<Props> {
-  const { match, mainActions, addressActions, children } = props;
+  const { match, mainActions, addressActions, children, contentProps } = props;
   const { address } = match.params;
 
   return (
@@ -23,7 +24,7 @@ function BaseLayout(props: Props): React.ReactElement<Props> {
       <Layout.Content variant="primary">
         <Address withBalance address={address} boxTheme="dark">
           {addressActions && !!addressActions.length && (
-            <Grid container spacing={8} justify="flex-end">
+            <Grid container spacing={1} justify="flex-end">
               {addressActions.map((item, index) => (
                 <Grid item key={index}>{item}</Grid>
               ))}
@@ -31,7 +32,7 @@ function BaseLayout(props: Props): React.ReactElement<Props> {
           )}
         </Address>
       </Layout.Content>
-      <Layout.Content variant="secondary">
+      <Layout.Content variant="secondary" {...contentProps}>
         {children}
       </Layout.Content>
     </Layout>
