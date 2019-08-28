@@ -49,11 +49,7 @@ function Request({ authId, className, isFirst, onAction, request: { origin }, ur
       {isFirst && (
         <>
           <Tip header='access' type='warn'>Only approve this request if you trust the application. Approving gives the application access to the addresses of your accounts.</Tip>
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={onApprove}
-          >
+          <Button onClick={onApprove}>
             Yes, allow this application access
           </Button>
         </>

@@ -7,7 +7,7 @@ import { OnActionFromCtx } from '../components/types';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 
-import { Address, Button, Tip, withOnAction, LinkButton } from '../components';
+import { Address, Button, Tip, withOnAction, BackButton } from '../components';
 import { forgetAccount } from '../messaging';
 import Layout from './Layout';
 
@@ -24,8 +24,8 @@ function Forget({ match: { params: { address } }, onAction }: Props): React.Reac
   return (
     <Layout
       actions={[
-        <LinkButton key='Cancel' to="/" color="primary">Cancel</LinkButton>,
-        <Button isDanger key='Forget' variant='contained' color='primary' onClick={onClick}>Forget</Button>
+        <BackButton key='Cancel'>Cancel</BackButton>,
+        <Button isDanger key='Forget' onClick={onClick}>Forget</Button>
       ]}
     >
       <Layout.Content variant="primary">

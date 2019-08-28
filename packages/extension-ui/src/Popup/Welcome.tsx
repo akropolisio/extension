@@ -29,11 +29,7 @@ function Welcome({ onAction }: Props): React.ReactElement<Props> {
           <li>We don&apos;t collect keys, addresses or any information - your information never leaves this machine</li>
         </ul>
         ... we are not in the information collection business (even anonymized).
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onClick}
-        >
+        <Button onClick={onClick}>
           Understood, let me continue
         </Button>
       </Box>

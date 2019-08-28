@@ -22,7 +22,7 @@ function Asset({ asset, className }: Props): React.ReactElement<Props> {
         <div className='amount'>{asset.payload.free}</div>
         <div className='symbol'>{asset.payload.symbol}</div>
         <div className='actions'>
-          <Button className='action' variant='contained' color='primary' disabled>Send</Button>
+          <Button className='action' disabled>Send</Button>
         </div>
       </div>
     </Box>

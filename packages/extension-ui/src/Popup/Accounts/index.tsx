@@ -24,8 +24,8 @@ function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
   return (
     <Layout
       actions={[
-        <LinkButton key="Create" color="primary" variant="contained" to={routes.account.create.getRedirectPath()}>Create account</LinkButton>,
-        <LinkButton key="Import" color="primary" variant="contained" to={routes.account.import.getRedirectPath()}>Import account</LinkButton>,
+        <LinkButton key="Create" to={routes.account.create.getRedirectPath()} size="small">Create account</LinkButton>,
+        <LinkButton key="Import" to={routes.account.import.getRedirectPath()} size="small">Import account</LinkButton>,
       ]}
     >
       <Layout.Content variant="secondary">

@@ -7,6 +7,7 @@ export { default as Address } from './Address';
 export { default as Box } from './Box';
 export { default as Button } from './Button';
 export { default as LinkButton } from './LinkButton';
+export { default as BackButton } from './BackButton';
 export { default as Dropdown } from './Dropdown';
 export { default as Header } from './Header';
 export { default as Icon } from './Icon';
@@ -17,6 +18,8 @@ export { default as Loading } from './Loading';
 export { default as TextArea } from './TextArea';
 export { default as Tip } from './Tip';
 export { default as View } from './View';
+
+export { default as Grid } from '@material-ui/core/Grid';
 
 export * from './contexts';
 export { default as defaults } from './defaults';

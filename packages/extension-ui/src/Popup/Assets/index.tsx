@@ -6,8 +6,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
 
-import { Address, Link, unicode } from '../../components';
-import Layout from '../Layout';
+import { BackButton } from '../../components';
+import BaseLayout from './BaseLayout';
 
 interface Props extends RouteComponentProps<{ address: string }> {
   className?: string;
@@ -18,14 +18,11 @@ function Assets(props: Props): React.ReactElement<Props> {
   const { address } = match.params;
 
   return (
-    <Layout actions={['Action 1', 'Action 2']}>
-      <Layout.Content variant="primary">
-        <Address withBalance address={address} boxTheme="dark" />
-      </Layout.Content>
-      <Layout.Content variant="secondary">
-        <Link to='/' className='back-link'>{unicode.BACK} Back</Link>
-      </Layout.Content>
-    </Layout>
+    <BaseLayout
+      mainActions={[<BackButton className='back-link' />]}
+    >
+      Content
+    </BaseLayout>
   );
 }
 

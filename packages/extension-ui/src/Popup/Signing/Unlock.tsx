@@ -34,11 +34,7 @@ export default function Unlock({ className, onSign }: Props): React.ReactElement
         onChange={setPassword}
         type='password'
       />
-      <Button
-        variant='contained'
-        color='primary'
-        onClick={onClick}
-      >
+      <Button onClick={onClick}>
         Sign the transaction
       </Button>
     </div>

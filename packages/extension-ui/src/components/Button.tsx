@@ -26,11 +26,13 @@ type Props = Omit<ButtonProps, 'classes'> & {
   isDanger?: boolean;
 }
 
-function Button({ isDanger, ...rest }: Props): React.ReactElement<Props> {
+function Button({ isDanger, variant = 'contained', color = 'primary', ...rest }: Props): React.ReactElement<Props> {
   const classes = useStyles();
 
   return (
     <MuiButton
+      variant={variant}
+      color={color}
       {...rest}
       classes={{
         root: cn(classes.root, { [classes.isDanger]: isDanger }),

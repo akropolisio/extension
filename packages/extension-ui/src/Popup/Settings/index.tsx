@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import settings from '@polkadot/ui-settings';
 import { setAddressPrefix } from '@polkadot/util-crypto';
 
-import { Dropdown, Input, Button, LinkButton } from '../../components';
+import { Dropdown, Input, Button, BackButton } from '../../components';
 import { notifyApiUrlChanged } from '../../messaging';
 import Layout from '../Layout';
 
@@ -68,7 +68,7 @@ export default function Settings(): React.ReactElement<{}> {
 
   return (
     <Layout
-      actions={[<LinkButton key='Cancel' to="/" color="primary">Cancel</LinkButton>]}
+      actions={[<BackButton key='Cancel'>Cancel</BackButton>]}
     >
       <Layout.Content variant="secondary">
         <Dropdown
@@ -90,7 +90,7 @@ export default function Settings(): React.ReactElement<{}> {
             onChange={_onChangeCustomUrl}
           />
           {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (
-            <Button variant="contained" color="primary" onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
+            <Button onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
           )}
         </>)}
       </Layout.Content>

@@ -6,7 +6,7 @@ import { OnActionFromCtx } from '../components/types';
 
 import React, { useState } from 'react';
 
-import { Address, Button, TextArea, withOnAction, LinkButton } from '../components';
+import { Address, Button, TextArea, withOnAction, BackButton } from '../components';
 import { createAccount, validateSeed } from '../messaging';
 import { Name, Password } from '../partials';
 import Layout from './Layout';
@@ -38,8 +38,8 @@ function Import({ onAction }: Props): React.ReactElement<Props> {
   return (
     <Layout
       actions={[
-        <LinkButton key='Cancel' to="/" color="primary">Cancel</LinkButton>,
-        <Button key='Import' variant='contained' color='primary' onClick={onCreate}>Import</Button>
+        <BackButton key='Cancel'>Cancel</BackButton>,
+        <Button key='Import' onClick={onCreate}>Import</Button>
       ]}
     >
       <Layout.Content variant="secondary">

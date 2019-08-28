@@ -11,11 +11,12 @@ interface IProps {
   to: string;
   color?: PropTypes.Color;
   variant?: 'text' | 'outlined' | 'contained';
+  size?: 'small' | 'medium' | 'large';
   children?: React.ReactNode;
 }
 
-export default function LinkButton(props: IProps) {
+export default function LinkButton({ variant = 'contained', color = 'primary', ...rest }: IProps) {
   return (
-    <Button component={AdapterLink} {...props} />
+    <Button component={AdapterLink} variant={variant} color={color} {...rest} />
   );
 }
