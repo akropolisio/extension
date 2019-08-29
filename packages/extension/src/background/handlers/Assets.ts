@@ -114,7 +114,7 @@ export default class Assets {
       type: 'balance',
       fromModule,
       payload: {
-        symbol: 'Coin',
+        symbol: 'DOT',
         free: free.toString(),
         locks: locks.map(lock => lock.toString()),
         reserved: reserved.toString(),

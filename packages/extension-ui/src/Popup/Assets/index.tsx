@@ -6,7 +6,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { RouteComponentProps, Switch, Route } from 'react-router';
 
-import { BackButton, Button } from '../../components';
+import { BackButton, Button, TextField, Typography } from '../../components';
 import { routes } from '../../routes';
 import BaseLayout from './BaseLayout';
 import PreviewPage from './PreviewPage';
@@ -34,7 +34,36 @@ function Assets(_props: Props): React.ReactElement<Props> {
             <BackButton key="Back" />,
             <Button key="Send" onClick={console.log}>Send</Button>,
           ]}
-        />
+        >
+          <Typography variant="h6" align="center">Send transaction</Typography>
+          <TextField
+            value={''}
+            onChange={console.log}
+            fullWidth
+            variant="outlined"
+            label='Address'
+            margin="normal"
+            error={false}
+            InputProps={{
+              autoFocus: true,
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            value={''}
+            onChange={console.log}
+            fullWidth
+            variant="outlined"
+            label='Amount'
+            margin="normal"
+            error={false}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </BaseLayout>
       </Route>
     </Switch>
   );

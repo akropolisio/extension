@@ -118,11 +118,11 @@ export default class Extension {
   }
 
   private seedCreate ({ length = SEED_DEFAULT_LENGTH, type }: MessageSeedCreate): MessageSeedCreateResponse {
-    const seed = mnemonicGenerate(length);
+    const suri = mnemonicGenerate(length);
 
     return {
-      address: keyring.createFromUri(seed, {}, type).address,
-      seed
+      address: keyring.createFromUri(suri, {}, type).address,
+      suri
     };
   }
 

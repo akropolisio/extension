@@ -75,7 +75,7 @@ export interface MessageExtrinsicSignResponse {
 
 export interface MessageSeedCreateResponse {
   address: string;
-  seed: string;
+  suri: string;
 }
 
 export interface MessageSeedCreate {

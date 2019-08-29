@@ -1,7 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import settings from '@polkadot/ui-settings';
+
 import Content, { ContentProps } from './Content';
-import { Link } from '../../components';
+import { Link, Typography, Grid } from '../../components';
 import { SettingsIcon } from '../../components/icons';
 import { routes } from '../../routes';
 
@@ -13,14 +15,26 @@ interface IProps {
 
 function Layout(props: IProps) {
   const { className, actions, children } = props;
+
+  const activeNode = settings.availableNodes.find(node => node.value.toString() === settings.apiUrl);
+
   return (
     <div className={className}>
-      <div className="header">
-        <span>Selector</span>
-        <Link to={routes.settings.getRedirectPath()}>
-          <SettingsIcon color="primary" className="settings-icon" />
-        </Link>
-      </div>
+      <Grid container spacing={2} wrap="nowrap" className="header">
+        <Grid item zeroMinWidth>
+          <Typography noWrap>
+            {activeNode
+              ? activeNode.text
+              : 'Custom node'
+            }
+          </Typography>
+        </Grid>
+        <Grid item xs>
+          <Link to={routes.settings.getRedirectPath()}>
+            <SettingsIcon color="primary" className="settings-icon" />
+          </Link>
+        </Grid>
+      </Grid>
       <div className="content">
         {children}
       </div>

@@ -2,14 +2,24 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { OnActionFromCtx } from '../../components/types';
-
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import { routes } from '@polkadot/extension-ui/routes';
+import { makeStyles } from '@material-ui/styles';
 
-import { ActionBar, Address, Link, withOnAction } from '../../components';
+import { Address, withOnAction, Button, LinkButton, Grid } from '../../components';
+import { OnActionFromCtx } from '../../components/types';
 import { editAccount } from '../../messaging';
 import { Name } from '../../partials';
+
+const useStyles = makeStyles({
+  nameInputMarginDense: {
+    paddingTop: 6.5,
+    paddingBottom: 6.5,
+  },
+  inputRoot: {
+    margin: 0,
+  },
+});
 
 interface Props {
   address: string;
@@ -21,6 +31,7 @@ interface Props {
 function Account({ address, className, onAction, onClick }: Props): React.ReactElement<Props> {
   const [isEditing, setEditing] = useState(false);
   const [editedName, setName] = useState<string | null>(null);
+  const classes = useStyles();
 
   const toggleEdit = (): void =>
     setEditing(!isEditing);
@@ -41,29 +52,42 @@ function Account({ address, className, onAction, onClick }: Props): React.ReactE
       className={className}
       onClick={onClick.bind(null, address)}
     >
-      {isEditing && (
-        <Name
-          address={address}
-          className='edit-name'
-          isFocussed
-          label={null}
-          onBlur={saveChanges}
-          onChange={setName}
-        />
-      )}
-      <ActionBar>
-        <Link onClick={toggleEdit}>Edit</Link>
-        <Link to={`/account/forget/${address}`}>Forget</Link>
-      </ActionBar>
+
+      <Grid container spacing={1} wrap="nowrap" justify="flex-end">
+        {isEditing && (<>
+          <Grid item xs>
+            <Name
+              address={address}
+              autoFocus
+              label={null}
+              onBlur={saveChanges}
+              onChange={setName}
+              margin="dense"
+              classes={{
+                root: classes.inputRoot,
+              }}
+              InputProps={{
+                classes: { inputMarginDense: classes.nameInputMarginDense },
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <Button variant="outlined" size="small" onClick={toggleEdit}>Save</Button>
+          </Grid>
+        </>)}
+        {!isEditing && (<>
+          <Grid item>
+            <Button variant="outlined" size="small" onClick={toggleEdit}>Edit</Button>
+          </Grid>
+          <Grid item>
+            <LinkButton variant="outlined" size="small" to={routes.account.forget.address.getRedirectPath({ address })}>
+              Forget
+            </LinkButton>
+          </Grid>
+        </>)}
+      </Grid>
     </Address>
   );
 }
 
-export default withOnAction(styled(Account)`
-  .edit-name {
-    left: 4.75rem;
-    position: absolute;
-    right: 0.75rem;
-    top: -0.5rem;
-  }
-`);
+export default withOnAction(Account);

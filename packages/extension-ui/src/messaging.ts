@@ -96,7 +96,7 @@ export async function createAccount(name: string, password: string, suri: string
   return sendMessage('accounts.create', { name, password, suri, type });
 }
 
-export async function createSeed(length?: number, type?: KeypairType): Promise<{ address: string; seed: string }> {
+export async function createSeed(length?: number, type?: KeypairType): Promise<{ address: string; suri: string }> {
   return sendMessage('seed.create', { length, type });
 }
 

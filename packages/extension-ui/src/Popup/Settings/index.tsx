@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import settings from '@polkadot/ui-settings';
 import { setAddressPrefix } from '@polkadot/util-crypto';
 
-import { Dropdown, Input, Button, BackButton } from '../../components';
+import { Dropdown, Button, BackButton, TextField } from '../../components';
 import { notifyApiUrlChanged } from '../../messaging';
 import Layout from '../Layout';
 
@@ -19,7 +19,9 @@ const prefixOptions = settings.availablePrefixes.map(({ text, value }): { text: 
   value: `${value}`
 }));
 
-const apiUrlOptions = [{ text: 'Custom node', value: '' }].concat(
+const CUSTOM_API_URL_VALUE = '-1';
+
+const apiUrlOptions = [{ text: 'Custom node', value: CUSTOM_API_URL_VALUE }].concat(
   settings.availableNodes.map(({ text, value }) => ({ text, value: `${value}` })),
 )
 
@@ -58,8 +60,8 @@ export default function Settings(): React.ReactElement<{}> {
     }
   };
 
-  const _onChangeCustomUrl = (value: string): void => {
-    setCustomApiUrl(value);
+  const _onChangeCustomUrl = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setCustomApiUrl(event.target.value);
   };
 
   const _onApplyCustomUrl = (): void => {
@@ -83,11 +85,17 @@ export default function Settings(): React.ReactElement<{}> {
           options={apiUrlOptions}
           value={selectedApiUrl}
         />
-        {!selectedApiUrl && (<>
-          <Input
-            label='custom endpoint URL'
+        {selectedApiUrl === CUSTOM_API_URL_VALUE && (<>
+          <TextField
             value={customApiUrl}
             onChange={_onChangeCustomUrl}
+            fullWidth
+            variant="outlined"
+            label='custom endpoint URL'
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (
             <Button onClick={_onApplyCustomUrl}>Apply Custom URL</Button>

@@ -6,31 +6,41 @@ import { OnActionFromCtx } from '../components/types';
 
 import React, { useState, useEffect } from 'react';
 
-import { Address, Button, Loading, TextArea, withOnAction, BackButton } from '../components';
-import { createAccount, createSeed } from '../messaging';
+import { Address, Button, Loading, withOnAction, BackButton, TextField } from '../components';
+import { createAccount, createSeed, validateSeed } from '../messaging';
 import { Name, Password } from '../partials';
 import Layout from './Layout';
 
 interface Props {
   onAction: OnActionFromCtx;
+  type: 'createNew' | 'import';
 }
 
-function Create({ onAction }: Props): React.ReactElement<Props> {
-  const [account, setAccount] = useState<null | { address: string; seed: string }>(null);
+function Create({ onAction, type }: Props): React.ReactElement<Props> {
+  const [seed, setSeed] = useState<string>('');
+  const [account, setAccount] = useState<null | { address: string; suri: string }>(null);
   const [name, setName] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
 
   useEffect((): void => {
-    createSeed()
-      .then(setAccount)
+    type === 'createNew' && createSeed()
+      .then(account => {
+        setAccount(account);
+        setSeed(account.suri);
+      })
       .catch(console.error);
   }, []);
 
-  // FIXME Duplicated between here and Import.tsx
+  const onChangeSeed = React.useCallback((event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    setSeed(event.currentTarget.value);
+    return validateSeed(event.currentTarget.value)
+      .then(setAccount)
+      .catch((): void => setAccount(null))
+  }, []);
+
   const onCreate = (): void => {
-    // this should always be the case
     if (name && password && account) {
-      createAccount(name, password, account.seed)
+      createAccount(name, password, account.suri)
         .then((): void => onAction('/'))
         .catch(console.error);
     }
@@ -40,24 +50,37 @@ function Create({ onAction }: Props): React.ReactElement<Props> {
     <Layout
       actions={[
         <BackButton key='Cancel'>Cancel</BackButton>,
-        <Button key='Create' onClick={onCreate}>Create</Button>
+        <Button key='Create' onClick={onCreate}>{type === 'createNew' ? 'Create' : 'Import'}</Button>
       ]}
     >
       <Layout.Content variant="secondary">
-        <Loading>{account && (
-          <>
-            <TextArea
-              isReadOnly
+        <Loading>
+          {(account || type === 'import') && (
+            <TextField
+              value={seed}
+              onChange={onChangeSeed}
+              fullWidth
+              multiline
+              rowsMax="3"
+              variant="outlined"
               label='generated 12-word mnemonic seed'
-              value={account.seed}
+              margin="normal"
+              error={type === 'import' && !!seed && !account}
+              InputProps={{
+                readOnly: type === 'createNew',
+                autoFocus: type === 'import',
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
-            <Name isFocussed onChange={setName} />
-            {name && <Password onChange={setPassword} />}
-            {name && password && (
-              <Address address={account.address} name={name} />
-            )}
-          </>
-        )}</Loading>
+          )}
+          {account && <Name autoFocus={type === 'createNew'} onChange={setName} />}
+          {account && name && <Password onChange={setPassword} />}
+          {account && name && password && (
+            <Address address={account.address} name={name} />
+          )}
+        </Loading>
       </Layout.Content>
     </Layout>
   );

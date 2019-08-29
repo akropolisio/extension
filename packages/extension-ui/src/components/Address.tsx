@@ -51,7 +51,7 @@ function Address({ accounts, address, children, className, name, variant = 'polk
         decodeAddress(account.address).toString() === addrU8aStr
       ) || null
     );
-  }, [address]);
+  }, [address, accounts]);
 
   return (
     <Box className={className} boxTheme={boxTheme}>
@@ -105,7 +105,7 @@ export default withAccounts(styled(Address)`
   }
 
   .address {
-    opacity: 0.5;
+    opacity: 0.65;
     overflow: hidden;
     text-overflow: ellipsis;
   }

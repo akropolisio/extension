@@ -24,6 +24,7 @@ export { default as Grid } from '@material-ui/core/Grid';
 export { default as Tabs } from '@material-ui/core/Tabs';
 export { default as Tab } from '@material-ui/core/Tab';
 export { default as TextField } from '@material-ui/core/TextField';
+export { default as Typography } from '@material-ui/core/Typography';
 
 export * from './contexts';
 export { default as defaults } from './defaults';

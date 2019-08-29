@@ -21,7 +21,6 @@ import Accounts from './Accounts';
 import Authorize from './Authorize';
 import Create from './Create';
 import Forget from './Forget';
-import Import from './Import';
 import Settings from './Settings';
 import Signing from './Signing';
 import Welcome from './Welcome';
@@ -88,9 +87,13 @@ export default function Popup(): React.ReactElement<{}> {
               <SigningContext.Provider value={signRequests}>
                 <AssetsContext.Provider value={assets}>
                   <Switch>
-                    <Route path={routes.account.create.getRoutePath()} component={Create} />
+                    <Route path={routes.account.create.getRoutePath()}>
+                      <Create type="createNew" />
+                    </Route>
                     <Route path={routes.account.forget.address.getRoutePath()} component={Forget} />
-                    <Route path={routes.account.import.getRoutePath()} component={Import} />
+                    <Route path={routes.account.import.getRoutePath()}>
+                      <Create type="import" />
+                    </Route>
                     <Route path={routes.assets.address.getRoutePath()} component={Assets} />
                     <Route path={routes.settings.getRoutePath()} component={Settings} />
                     <Route exact path='/' component={Root} />

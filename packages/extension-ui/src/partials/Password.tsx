@@ -4,18 +4,25 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { Input } from '../components';
+import { TextField } from '../components';
 
 interface Props {
-  isFocussed?: boolean;
+  autoFocus?: boolean;
   onChange: (password: string | null) => void;
 }
 
 const MIN_LENGTH = 6;
 
-export default function Password ({ isFocussed, onChange }: Props): React.ReactElement<Props> {
+export default function Password({ autoFocus, onChange }: Props): React.ReactElement<Props> {
   const [pass1, setPass1] = useState('');
   const [pass2, setPass2] = useState('');
+
+  const onChangePass1 = React.useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
+    setPass1(event.target.value);
+  }, []);
+  const onChangePass2 = React.useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
+    setPass2(event.target.value);
+  }, []);
 
   useEffect((): void => {
     onChange(
@@ -27,19 +34,38 @@ export default function Password ({ isFocussed, onChange }: Props): React.ReactE
 
   return (
     <>
-      <Input
-        isError={pass1.length < MIN_LENGTH}
-        isFocussed={isFocussed}
+      <TextField
+        type="password"
+        value={pass1}
+        onChange={onChangePass1}
+        fullWidth
+        variant="outlined"
         label='a new password for this account'
-        onChange={setPass1}
-        type='password'
+        margin="normal"
+        error={!!pass1 && pass1.length < MIN_LENGTH}
+        InputProps={{
+          autoFocus,
+        }}
+        InputLabelProps={{
+          shrink: true,
+        }}
       />
       {(pass1.length >= MIN_LENGTH) && (
-        <Input
-          isError={pass1 !== pass2}
+        <TextField
+          type="password"
+          value={pass2}
+          onChange={onChangePass2}
+          fullWidth
+          variant="outlined"
           label='repeat password for verification'
-          onChange={setPass2}
-          type='password'
+          margin="normal"
+          error={!!pass2 && pass1 !== pass2}
+          InputProps={{
+            autoFocus,
+          }}
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
       )}
     </>
