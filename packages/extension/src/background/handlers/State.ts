@@ -80,26 +80,28 @@ export default class State {
       .map(({ id, request, url }): SigningRequest => [id, request, url]);
   }
 
-  private popupClose (): void {
-    this._windows.forEach((id: number): void =>
-      extension.windows.remove(id)
-    );
+  private popupClose (popupId?: number): void {
+    this._windows.forEach((id: number): void => {
+      const isRemovable = typeof popupId === 'number' ? id === popupId : true;
+      isRemovable && extension.windows.remove(id);
+    });
     this._windows = [];
   }
 
-  private popupOpen (): void {
+  private popupOpen (onOpen?: (popupId: number) => void): void {
     extension.windows.create({
       // This is not allowed on FF, only on Chrome - disable completely
       // focused: true,
-      height: 581,
+      height: 600,
       left: 150,
       top: 150,
       type: 'popup',
       url: extension.extension.getURL('popup.html'),
-      width: 480
+      width: 360
     }, (window?: chrome.windows.Window): void => {
       if (window) {
         this._windows.push(window.id);
+        onOpen && onOpen(window.id);
       }
     });
   }
@@ -124,10 +126,10 @@ export default class State {
     };
   }
 
-  private signComplete = (id: string, fn: Function): (result: MessageExtrinsicSignResponse | Error) => void => {
+  private signComplete = (id: string, popupId: number, fn: Function): (result: MessageExtrinsicSignResponse | Error) => void => {
     return (result: MessageExtrinsicSignResponse | Error): void => {
       delete this._signRequests[id];
-      this.updateIconSign(true);
+      this.updateIconSign(true, popupId);
 
       fn(result);
     };
@@ -141,7 +143,7 @@ export default class State {
     return parts[2];
   }
 
-  private updateIcon (shouldClose?: boolean): void {
+  private updateIcon (shouldClose?: boolean, popupId?: number): void {
     const authCount = this.numAuthRequests;
     const signCount = this.numSignRequests;
     const text = (
@@ -153,7 +155,7 @@ export default class State {
     extension.browserAction.setBadgeText({ text });
 
     if (shouldClose && text === '') {
-      this.popupClose();
+      this.popupClose(popupId);
     }
   }
 
@@ -162,9 +164,9 @@ export default class State {
     this.updateIcon(shouldClose);
   }
 
-  private updateIconSign (shouldClose?: boolean): void {
+  private updateIconSign (shouldClose?: boolean, popupId?: number): void {
     this.signSubject.next(this.allSignRequests);
-    this.updateIcon(shouldClose);
+    this.updateIcon(shouldClose, popupId);
   }
 
   public async authorizeUrl (url: string, request: MessageAuthorize): Promise<boolean> {
@@ -214,16 +216,23 @@ export default class State {
     const id = getId();
 
     return new Promise((resolve, reject): void => {
+      let popupId = -1;
       this._signRequests[id] = {
         id,
         request,
-        resolve: this.signComplete(id, resolve),
-        reject: this.signComplete(id, reject),
+        resolve: result => {
+          this.signComplete(id, popupId, resolve)(result);
+        },
+        reject: result => {
+          this.signComplete(id, popupId, reject)(result);
+        },
         url
       };
 
       this.updateIconSign();
-      this.popupOpen();
+      this.popupOpen(id => {
+        popupId = id;
+      });
     });
   }
 }

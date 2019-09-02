@@ -3,14 +3,16 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map, pairwise, tap, concatMap, switchMap } from 'rxjs/operators';
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import { map, pairwise, tap, switchMap, first, takeWhile } from 'rxjs/operators';
+import { ApiRx, WsProvider } from '@polkadot/api';
 import { createType, Vec } from '@polkadot/types';
 import { Balance, BalanceLock } from '@polkadot/types/interfaces';
 import settings from '@polkadot/ui-settings';
 import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
 
-import { ModuleType, IModuleInterface, IAsset } from '../types';
+import Injected from '../../page/Injected';
+import { ModuleType, IModuleInterface, IAsset, IBalanceAsset } from '../types';
+import State from './State';
 
 const defaultAssetModules: Record<ModuleType, string[]> = {
   balance: [],
@@ -32,18 +34,23 @@ const moduleInterfaces: Record<ModuleType, IModuleInterface> = {
   }
 }
 
-const ZERO_BALANCE = createType('Balance', 0);
-const ZERO_VEC = createType('Vec<BalanceLock>', []);
-
 export default class Assets {
+  private _state: State;
+
   private readonly _apiUrl = new BehaviorSubject(settings.apiUrl);
 
-  private readonly _api: Observable<ApiPromise> = this._apiUrl.asObservable().pipe(
-    concatMap(async url => {
-      const api = new ApiPromise({ provider: new WsProvider(url) });
-      await new Promise(resolve => api.once('ready', resolve));
-      return api;
-    }),
+  private readonly _api: Observable<ApiRx> = this._apiUrl.asObservable().pipe(
+    switchMap(url => ApiRx.create({
+      provider: new WsProvider(url),
+      signer: new Injected(async (message, request) => {
+        switch (message) {
+          case 'extrinsic.sign': {
+            return await this._state.signQueue('from extension', request);
+          }
+          default: return;
+        }
+      }).signer,
+    })),
   );
 
   private readonly _assetModules: Observable<Record<ModuleType, string[]>> = this._api.pipe(
@@ -55,13 +62,17 @@ export default class Assets {
     this._assetModules,
     accountsObservable.subject.asObservable(),
   ).pipe(
-    switchMap(async ([api, assetModules, _accounts]) => {
+    switchMap(([api, assetModules, _accounts]) => {
       const addresses = Object.values(_accounts).map(({ json }) => json.address);
       return this.loadAssets(api, assetModules, addresses);
-    })
+    }),
+    map(assetsWithAddress => {
+      return assetsWithAddress.reduce((acc, { address, assets }) => ({ ...acc, [address]: assets }), {});
+    }),
   );
 
-  constructor() {
+  constructor(state: State) {
+    this._state = state;
     // disconnect previous api instance
     this._api.pipe(
       pairwise(),
@@ -73,7 +84,7 @@ export default class Assets {
     this._apiUrl.next(url);
   }
 
-  private getAssetModules(api: ApiPromise): Record<ModuleType, string[]> {
+  private getAssetModules(api: ApiRx): Record<ModuleType, string[]> {
     return (Object.keys(moduleInterfaces) as ModuleType[])
       .reduce<Record<ModuleType, string[]>>((acc, cur) => {
         return {
@@ -83,47 +94,56 @@ export default class Assets {
       }, defaultAssetModules);
   }
 
-  public async loadAssets(api: ApiPromise, assetModules: Record<ModuleType, string[]>, addresses: string[]): Promise<Record<string, IAsset[]>> {
-    const allAssets = (await Promise.all(
-      addresses.map(async address => ({
-        address,
-        assets: await this.loadAssetsByAddress(api, assetModules, address),
-      })),
-    ))
-
-    return allAssets.reduce((acc, { address, assets }) => ({ ...acc, [address]: assets }), {});
+  public loadAssets(
+    api: ApiRx, assetModules: Record<ModuleType, string[]>, addresses: string[],
+  ): Observable<Array<{ address: string, assets: IAsset[] }>> {
+    return combineLatest(addresses.map(
+      address => this.loadAssetsByAddress(api, assetModules, address).pipe(
+        map(assets => ({ address, assets })),
+      ),
+    ));
   }
 
-  public async loadAssetsByAddress(api: ApiPromise, assetModules: Record<ModuleType, string[]>, address: string): Promise<IAsset[]> {
-    return Promise.all(
+  public loadAssetsByAddress(api: ApiRx, assetModules: Record<ModuleType, string[]>, address: string): Observable<IAsset[]> {
+    return combineLatest(
       assetModules.balance.map(this.loadBalanceAssets.bind(this, api, address)),
+      // ... handlers for other assets
     )
   }
 
-  private async loadBalanceAssets(api: ApiPromise, address: string, fromModule: string): Promise<IAsset> {
+  private loadBalanceAssets(api: ApiRx, address: string, fromModule: string): Observable<IBalanceAsset> {
     const query = api.query[fromModule];
 
-    const [free = ZERO_BALANCE, locks = ZERO_VEC, reserved = ZERO_BALANCE]: [Balance?, Vec<BalanceLock>?, Balance?] =
-      await Promise.all([
-        query.freeBalance(address),
-        query.locks(address),
-        query.reservedBalance(address),
-      ]) as any; // FIXME need to remove 'any'
+    return combineLatest([
+      query.freeBalance<Balance>(address),
+      query.locks<Vec<BalanceLock>>(address),
+      query.reservedBalance<Balance>(address),
+    ]).pipe(
+      map(([free, locks, reserved]) => ({
+        type: 'balance',
+        fromModule,
+        payload: {
+          symbol: 'DOT',
+          free: free.toString(),
+          locks: locks.map(lock => lock.toString()),
+          reserved: reserved.toString(),
+        }
+      })),
+    );
+  }
 
-    return {
-      type: 'balance',
-      fromModule,
-      payload: {
-        symbol: 'DOT',
-        free: free.toString(),
-        locks: locks.map(lock => lock.toString()),
-        reserved: reserved.toString(),
-      }
-    }
+  public async sendBaseUnits(from: string, to: string, amount: string) {
+    const api = await this._api.pipe(first()).toPromise();
+    const transfer = api.tx.balances.transfer(to, amount);
+    const tx = transfer.signAndSend(from).pipe(
+      takeWhile(({ status }) => !status.isFinalized, true),
+    );
+
+    await tx.toPromise();
   }
 }
 
-function findInterfaceImplements(api: ApiPromise, { query, tx }: IModuleInterface): string[] {
+function findInterfaceImplements(api: ApiRx, { query, tx }: IModuleInterface): string[] {
   const modules: string[] = Array.from(new Set([
     ...Object.keys(api.query),
     ...Object.keys(api.tx),

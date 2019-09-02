@@ -3,19 +3,41 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React from 'react';
-import styled from 'styled-components';
 import { RouteComponentProps, Switch, Route } from 'react-router';
+import { Form, Field } from 'react-final-form';
+import { FORM_ERROR } from 'final-form';
 
-import { BackButton, Button, TextField, Typography } from '../../components';
+import { BackButton, Button, Typography, TextFormField } from '../../components';
+import { sendBaseAsset } from '../../messaging';
 import { routes } from '../../routes';
 import BaseLayout from './BaseLayout';
 import PreviewPage from './PreviewPage';
+
+interface IForm {
+  address: string;
+  amount: string;
+}
+
+const fields: { [key in keyof IForm]: key } = {
+  address: 'address',
+  amount: 'amount',
+}
 
 interface Props extends RouteComponentProps<{ address: string }> {
   className?: string;
 }
 
 function Assets(_props: Props): React.ReactElement<Props> {
+  const { address } = _props.match.params;
+
+  const send = React.useCallback(async ({ address: to, amount }: IForm) => {
+    try {
+      await sendBaseAsset({ from: address, to, amount });
+      return;
+    } catch (error) {
+      return { [FORM_ERROR]: error && error.message };
+    }
+  }, [address]);
 
   return (
     <Switch>
@@ -29,49 +51,51 @@ function Assets(_props: Props): React.ReactElement<Props> {
         />
       </Route>
       <Route exact path={routes.assets.address.send.getRoutePath()}>
-        <BaseLayout
-          mainActions={[
-            <BackButton key="Back" />,
-            <Button key="Send" onClick={console.log}>Send</Button>,
-          ]}
-        >
-          <Typography variant="h6" align="center">Send transaction</Typography>
-          <TextField
-            value={''}
-            onChange={console.log}
-            fullWidth
-            variant="outlined"
-            label='Address'
-            margin="normal"
-            error={false}
-            InputProps={{
-              autoFocus: true,
-            }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            value={''}
-            onChange={console.log}
-            fullWidth
-            variant="outlined"
-            label='Amount'
-            margin="normal"
-            error={false}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </BaseLayout>
+        <Form onSubmit={send} subscription={{ submitting: true, submitError: true }}>
+          {({ handleSubmit, submitting, submitError }) => (
+            <form onSubmit={handleSubmit} style={{ height: '100%' }}>
+              <BaseLayout
+                mainActions={[
+                  <BackButton key="Back" />,
+                  <Button key="Send" type="submit" disabled={submitting}>Send{submitting && 'ing'}</Button>,
+                ]}
+              >
+                <Typography variant="h6" align="center">Send transaction</Typography>
+                <Field
+                  name={fields.address}
+                  component={TextFormField}
+                  fullWidth
+                  variant="outlined"
+                  label='Address'
+                  margin="normal"
+                  error={false}
+                  InputProps={{
+                    autoFocus: true,
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <Field
+                  name={fields.amount}
+                  component={TextFormField}
+                  fullWidth
+                  variant="outlined"
+                  label='Amount'
+                  margin="normal"
+                  error={false}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                {!!submitError && <Typography variant='body1' color="error">{submitError}</Typography>}
+              </BaseLayout>
+            </form>
+          )}
+        </Form>
       </Route>
     </Switch>
   );
 }
 
-export default styled(Assets)`
-  .back-link {
-    padding-bottom: 0.5rem;
-    display: inline-block;
-  }
-`;
+export default Assets;

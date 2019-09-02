@@ -31,7 +31,7 @@ let idCounter = 0;
 // a generic message sender that creates an event, returning a promise that will
 // resolve once the event is resolved (by the response listener just below this)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sendMessage (message: MessageTypes, request: any = null, subscriber?: (data: any) => void): Promise<any> {
+export function sendMessage (message: MessageTypes, request: any = null, subscriber?: (data: any) => void): Promise<any> {
   return new Promise((resolve, reject): void => {
     const id = `${Date.now()}.${++idCounter}`;
 

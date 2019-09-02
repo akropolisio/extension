@@ -5,7 +5,7 @@
 import { SignerPayload } from '@polkadot/api/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
-export type MessageTypes = 'authorize.approve' | 'authorize.reject' | 'authorize.requests' | 'authorize.subscribe' | 'authorize.tab' | 'accounts.create' | 'accounts.edit' | 'accounts.forget' | 'accounts.list' | 'accounts.subscribe' | 'extrinsic.sign' | 'seed.create' | 'seed.validate' | 'signing.approve' | 'signing.cancel' | 'signing.requests' | 'signing.subscribe' | 'settings.apiUrlChanged' | 'assets.subscribe';
+export type MessageTypes = 'authorize.approve' | 'authorize.reject' | 'authorize.requests' | 'authorize.subscribe' | 'authorize.tab' | 'accounts.create' | 'accounts.edit' | 'accounts.forget' | 'accounts.list' | 'accounts.subscribe' | 'extrinsic.sign' | 'seed.create' | 'seed.validate' | 'signing.approve' | 'signing.cancel' | 'signing.requests' | 'signing.subscribe' | 'settings.apiUrlChanged' | 'assets.subscribe' | 'assets.sendBaseAsset';
 
 export type AuthorizeRequest = [string, MessageAuthorize, string];
 
@@ -97,8 +97,10 @@ export interface MessageApiUrlChanged {
   apiUrl: string;
 }
 
-export interface AssetsLoadResponse {
-  address: string;
+export interface SendBaseAssetRequest {
+  to: string;
+  from: string;
+  amount: string;
 }
 
 export type ModuleType = 'balance';
@@ -114,9 +116,11 @@ export interface IAssetBase<T extends ModuleType, P> {
   fromModule: string;
 }
 
-export type IAsset = IAssetBase<'balance', {
+export type IBalanceAsset = IAssetBase<'balance', {
   symbol: string;
   free: string;
   locks: string[];
   reserved: string;
-}>
+}>;
+
+export type IAsset = IBalanceAsset;

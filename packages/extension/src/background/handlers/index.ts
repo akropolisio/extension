@@ -11,7 +11,7 @@ import State from './State';
 import Tabs from './Tabs';
 
 const state = new State();
-const assets = new Assets();
+const assets = new Assets(state);
 const extension = new Extension(state, assets);
 const tabs = new Tabs(state);
 

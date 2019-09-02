@@ -5,7 +5,7 @@
 import { Subscribable } from 'rxjs';
 import { SubjectInfo } from '@polkadot/ui-keyring/observable/types';
 import { KeyringJson } from '@polkadot/ui-keyring/types';
-import { AuthorizeRequest, MessageTypes, MessageAccountCreate, MessageAccountEdit, MessageAuthorizeApprove, MessageAuthorizeReject, MessageExtrinsicSignApprove, MessageExtrinsicSignCancel, MessageSeedCreate, MessageSeedCreateResponse, MessageSeedValidate, MessageSeedValidateResponse, MessageAccountForget, SigningRequest, MessageApiUrlChanged } from '../types';
+import { AuthorizeRequest, MessageTypes, MessageAccountCreate, MessageAccountEdit, MessageAuthorizeApprove, MessageAuthorizeReject, MessageExtrinsicSignApprove, MessageExtrinsicSignCancel, MessageSeedCreate, MessageSeedCreateResponse, MessageSeedValidate, MessageSeedValidateResponse, MessageAccountForget, SigningRequest, MessageApiUrlChanged, SendBaseAssetRequest } from '../types';
 
 import keyring from '@polkadot/ui-keyring';
 import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
@@ -20,7 +20,7 @@ import Assets from './Assets';
 const SEED_DEFAULT_LENGTH = 12;
 const SEED_LENGTHS = [12, 24];
 
-function transformAccounts (accounts: SubjectInfo): KeyringJson[] {
+function transformAccounts(accounts: SubjectInfo): KeyringJson[] {
   return Object.values(accounts).map(({ json }): KeyringJson => json);
 }
 
@@ -28,18 +28,18 @@ export default class Extension {
   private state: State;
   private assets: Assets;
 
-  public constructor (state: State, assets: Assets) {
+  public constructor(state: State, assets: Assets) {
     this.state = state;
     this.assets = assets;
   }
 
-  private accountsCreate ({ name, password, suri, type }: MessageAccountCreate): boolean {
+  private accountsCreate({ name, password, suri, type }: MessageAccountCreate): boolean {
     keyring.addUri(suri, password, { name }, type);
 
     return true;
   }
 
-  private accountsEdit ({ address, name }: MessageAccountEdit): boolean {
+  private accountsEdit({ address, name }: MessageAccountEdit): boolean {
     const pair = keyring.getPair(address);
 
     assert(pair, 'Unable to find pair');
@@ -49,18 +49,18 @@ export default class Extension {
     return true;
   }
 
-  private accountsForget ({ address }: MessageAccountForget): boolean {
+  private accountsForget({ address }: MessageAccountForget): boolean {
     keyring.forgetAccount(address);
 
     return true;
   }
 
-  private accountsList (): KeyringJson[] {
+  private accountsList(): KeyringJson[] {
     return transformAccounts(accountsObservable.subject.getValue());
   }
 
   // FIXME This looks very much like what we have in Tabs
-  private accountsSubscribe (id: string, port: chrome.runtime.Port): boolean {
+  private accountsSubscribe(id: string, port: chrome.runtime.Port): boolean {
     const cb = createSubscription(id, port);
     const subscription = accountsObservable.subject.subscribe((accounts: SubjectInfo): void =>
       cb(transformAccounts(accounts))
@@ -74,7 +74,7 @@ export default class Extension {
     return true;
   }
 
-  private authorizeApprove ({ id }: MessageAuthorizeApprove): boolean {
+  private authorizeApprove({ id }: MessageAuthorizeApprove): boolean {
     const queued = this.state.getAuthRequest(id);
 
     assert(queued, 'Unable to find request');
@@ -86,7 +86,7 @@ export default class Extension {
     return true;
   }
 
-  private authorizeReject ({ id }: MessageAuthorizeReject): boolean {
+  private authorizeReject({ id }: MessageAuthorizeReject): boolean {
     const queued = this.state.getAuthRequest(id);
 
     assert(queued, 'Unable to find request');
@@ -98,12 +98,12 @@ export default class Extension {
     return true;
   }
 
-  private authorizeRequests (): AuthorizeRequest[] {
+  private authorizeRequests(): AuthorizeRequest[] {
     return this.state.allAuthRequests;
   }
 
   // FIXME This looks very much like what we have in accounts
-  private authorizeSubscribe (id: string, port: chrome.runtime.Port): boolean {
+  private authorizeSubscribe(id: string, port: chrome.runtime.Port): boolean {
     const cb = createSubscription(id, port);
     const subscription = this.state.authSubject.subscribe((requests: AuthorizeRequest[]): void =>
       cb(requests)
@@ -117,7 +117,7 @@ export default class Extension {
     return true;
   }
 
-  private seedCreate ({ length = SEED_DEFAULT_LENGTH, type }: MessageSeedCreate): MessageSeedCreateResponse {
+  private seedCreate({ length = SEED_DEFAULT_LENGTH, type }: MessageSeedCreate): MessageSeedCreateResponse {
     const suri = mnemonicGenerate(length);
 
     return {
@@ -126,7 +126,7 @@ export default class Extension {
     };
   }
 
-  private seedValidate ({ suri, type }: MessageSeedValidate): MessageSeedValidateResponse {
+  private seedValidate({ suri, type }: MessageSeedValidate): MessageSeedValidateResponse {
     const { phrase } = keyExtractSuri(suri);
 
     assert(SEED_LENGTHS.includes(phrase.split(' ').length), `Mnemonic needs to contain ${SEED_LENGTHS.join(', ')} words`);
@@ -138,7 +138,7 @@ export default class Extension {
     };
   }
 
-  private signingApprove ({ id, password }: MessageExtrinsicSignApprove): boolean {
+  private signingApprove({ id, password }: MessageExtrinsicSignApprove): boolean {
     const queued = this.state.getSignRequest(id);
 
     assert(queued, 'Unable to find request');
@@ -167,7 +167,7 @@ export default class Extension {
     return true;
   }
 
-  private signingCancel ({ id }: MessageExtrinsicSignCancel): boolean {
+  private signingCancel({ id }: MessageExtrinsicSignCancel): boolean {
     const queued = this.state.getSignRequest(id);
 
     assert(queued, 'Unable to find request');
@@ -179,12 +179,12 @@ export default class Extension {
     return true;
   }
 
-  private signingRequests (): SigningRequest[] {
+  private signingRequests(): SigningRequest[] {
     return this.state.allSignRequests;
   }
 
   // FIXME This looks very much like what we have in authorization
-  private signingSubscribe (id: string, port: chrome.runtime.Port): boolean {
+  private signingSubscribe(id: string, port: chrome.runtime.Port): boolean {
     const cb = createSubscription(id, port);
     const subscription = this.state.signSubject.subscribe((requests: SigningRequest[]): void =>
       cb(requests)
@@ -206,6 +206,10 @@ export default class Extension {
     return this.subscribeToObservable(id, port, this.assets.balances);
   }
 
+  private sendBaseAsset({ from, to, amount }: SendBaseAssetRequest): Promise<void> {
+    return this.assets.sendBaseUnits(from, to, amount);
+  }
+
   private subscribeToObservable(id: string, port: chrome.runtime.Port, target: Subscribable<any>): boolean {
     const cb = createSubscription(id, port);
     const subscription = target.subscribe(cb);
@@ -219,7 +223,7 @@ export default class Extension {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async handle (id: string, type: MessageTypes, request: any, port: chrome.runtime.Port): Promise<any> {
+  public async handle(id: string, type: MessageTypes, request: any, port: chrome.runtime.Port): Promise<any> {
     switch (type) {
       case 'authorize.approve':
         return this.authorizeApprove(request);
@@ -271,6 +275,9 @@ export default class Extension {
 
       case 'assets.subscribe':
         return this.subscribeAssets(id, port);
+
+      case 'assets.sendBaseAsset':
+        return this.sendBaseAsset(request);
 
       default:
         throw new Error(`Unable to handle message of type ${type}`);
