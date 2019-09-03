@@ -4,7 +4,6 @@
 
 import { KeyringJson } from '@polkadot/ui-keyring/types';
 import { Prefix } from '@polkadot/util-crypto/address/types';
-import { AccountsFromCtx } from './types';
 
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import styled from 'styled-components';
@@ -12,12 +11,11 @@ import cn from 'classnames';
 import Identicon from '@polkadot/react-identicon';
 import settings from '@polkadot/ui-settings';
 
-import { withAccounts, AssetsContext } from './contexts';
+import { AccountContext, AssetsContext } from './contexts';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import Box from './Box';
 
 interface Props {
-  accounts: AccountsFromCtx;
   address: string;
   withBalance?: boolean;
   children?: React.ReactNode;
@@ -28,7 +26,8 @@ interface Props {
   onClick?(): void;
 }
 
-function Address({ accounts, address, children, className, name, variant = 'polkadot', withBalance = false, onClick, boxTheme }: Props): React.ReactElement<Props> {
+function Address({ address, children, className, name, variant = 'polkadot', withBalance = false, onClick, boxTheme }: Props): React.ReactElement<Props> {
+  const accounts = useContext(AccountContext);
   const [account, setAccount] = useState<KeyringJson | null>(null);
   const [formatted, setFormatted] = useState<string | null>(null);
 
@@ -82,7 +81,7 @@ function Address({ accounts, address, children, className, name, variant = 'polk
   );
 }
 
-export default withAccounts(styled(Address)`
+export default styled(Address)`
   display: flex;
   flex-wrap: wrap;
 
@@ -121,4 +120,4 @@ export default withAccounts(styled(Address)`
   .clickable {
     cursor: pointer;
   }
-`);
+`;

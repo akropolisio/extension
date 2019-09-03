@@ -2,12 +2,11 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { routes } from '@polkadot/extension-ui/routes';
 import { makeStyles } from '@material-ui/styles';
 
-import { Address, withOnAction, Button, LinkButton, Grid } from '../../components';
-import { OnActionFromCtx } from '../../components/types';
+import { Address, ActionContext, Button, LinkButton, Grid } from '../../components';
 import { editAccount } from '../../messaging';
 import { Name } from '../../partials';
 
@@ -24,11 +23,11 @@ const useStyles = makeStyles({
 interface Props {
   address: string;
   className?: string;
-  onAction: OnActionFromCtx;
   onClick(address: string): void;
 }
 
-function Account({ address, className, onAction, onClick }: Props): React.ReactElement<Props> {
+export default function Account({ address, className, onClick }: Props): React.ReactElement<Props> {
+  const onAction = useContext(ActionContext);
   const [isEditing, setEditing] = useState(false);
   const [editedName, setName] = useState<string | null>(null);
   const classes = useStyles();
@@ -39,7 +38,7 @@ function Account({ address, className, onAction, onClick }: Props): React.ReactE
     if (editedName && editedName !== name) {
       editAccount(address, editedName)
         .then((): void => onAction())
-        .catch(console.error);
+        .catch((error: Error) => console.error(error));
     }
 
     toggleEdit();
@@ -89,5 +88,3 @@ function Account({ address, className, onAction, onClick }: Props): React.ReactE
     </Address>
   );
 }
-
-export default withOnAction(Account);

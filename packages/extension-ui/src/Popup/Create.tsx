@@ -2,21 +2,19 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { OnActionFromCtx } from '../components/types';
+import React, { useContext, useState, useEffect } from 'react';
 
-import React, { useState, useEffect } from 'react';
-
-import { Address, Button, Loading, withOnAction, BackButton, TextField } from '../components';
+import { Address, Button, Loading, ActionContext, BackButton, TextField } from '../components';
 import { createAccount, createSeed, validateSeed } from '../messaging';
 import { Name, Password } from '../partials';
 import Layout from './Layout';
 
 interface Props {
-  onAction: OnActionFromCtx;
   type: 'createNew' | 'import';
 }
 
-function Create({ onAction, type }: Props): React.ReactElement<Props> {
+export default function Create({ type }: Props): React.ReactElement<Props> {
+  const onAction = useContext(ActionContext);
   const [seed, setSeed] = useState<string>('');
   const [account, setAccount] = useState<null | { address: string; suri: string }>(null);
   const [name, setName] = useState<string | null>(null);
@@ -28,7 +26,7 @@ function Create({ onAction, type }: Props): React.ReactElement<Props> {
         setAccount(account);
         setSeed(account.suri);
       })
-      .catch(console.error);
+      .catch((error: Error) => console.error(error));
   }, []);
 
   const onChangeSeed = React.useCallback((event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
@@ -42,7 +40,7 @@ function Create({ onAction, type }: Props): React.ReactElement<Props> {
     if (name && password && account) {
       createAccount(name, password, account.suri)
         .then((): void => onAction('/'))
-        .catch(console.error);
+        .catch((error: Error) => console.error(error));
     }
   };
 
@@ -85,5 +83,3 @@ function Create({ onAction, type }: Props): React.ReactElement<Props> {
     </Layout>
   );
 }
-
-export default withOnAction(Create);

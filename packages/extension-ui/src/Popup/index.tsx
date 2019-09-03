@@ -66,7 +66,7 @@ export default function Popup(): React.ReactElement<{}> {
       subscribeAuthorize(setAuthRequests),
       subscribeSigning(setSignRequests),
       subscribeAssets(setAssets),
-    ]).catch(console.error);
+    ]).catch((error: Error) => console.error(error));
     onAction();
   }, []);
 

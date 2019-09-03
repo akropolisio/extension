@@ -2,21 +2,17 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AccountsFromCtx } from '../../components/types';
+import React, { useContext } from 'react';
 
-import React from 'react';
-
-import { Tip, withAccounts, withOnAction, LinkButton, Grid } from '../../components';
+import { Tip, AccountContext, ActionContext, LinkButton, Grid } from '../../components';
 import { routes } from '../../routes';
 import Layout from '../Layout';
 import Account from './Account';
 
-interface Props {
-  accounts: AccountsFromCtx;
-  onAction(to?: string): void;
-}
+export default function Accounts(): React.ReactElement<{}> {
+  const accounts = useContext(AccountContext);
+  const onAction = useContext(ActionContext);
 
-function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
   const _onAddressClick = React.useCallback((address: string) => {
     onAction(routes.assets.address.getRedirectPath({ address }))
   }, []);
@@ -46,9 +42,3 @@ function Accounts({ accounts, onAction }: Props): React.ReactElement<Props> {
     </Layout>
   );
 }
-
-export default (
-  withOnAction(
-    withAccounts(Accounts),
-  )
-);

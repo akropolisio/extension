@@ -3,32 +3,31 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { MessageAuthorize } from '@polkadot/extension/background/types';
-import { OnActionFromCtx } from '../../components/types';
 
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 
-import { ActionBar, Button, Icon, IconBox, Link, Tip, defaults, withOnAction } from '../../components';
+import { ActionBar, ActionContext, Button, Icon, IconBox, Link, Tip, defaults } from '../../components';
 import { approveAuthRequest, rejectAuthRequest } from '../../messaging';
 
 interface Props {
   authId: string;
   className?: string;
   isFirst: boolean;
-  onAction: OnActionFromCtx;
   request: MessageAuthorize;
   url: string;
 }
 
-function Request({ authId, className, isFirst, onAction, request: { origin }, url }: Props): React.ReactElement<Props> {
+function Request({ authId, className, isFirst, request: { origin }, url }: Props): React.ReactElement<Props> {
+  const onAction = useContext(ActionContext);
   const onApprove = (): Promise<void> =>
     approveAuthRequest(authId)
       .then((): void => onAction())
-      .catch(console.error);
+      .catch((error: Error) => console.error(error));
   const onReject = (): Promise<void> =>
     rejectAuthRequest(authId)
       .then((): void => onAction())
-      .catch(console.error);
+      .catch((error: Error) => console.error(error));
 
   return (
     <IconBox
@@ -58,7 +57,7 @@ function Request({ authId, className, isFirst, onAction, request: { origin }, ur
   );
 }
 
-export default withOnAction(styled(Request)`
+export default styled(Request)`
   .icon {
     background: ${defaults.btnBgDanger};
     color: ${defaults.btnColorDanger};
@@ -77,4 +76,4 @@ export default withOnAction(styled(Request)`
     text-overflow: ellipsis;
     vertical-align: top;
   }
-`);
+`;

@@ -2,15 +2,13 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { PropTypes } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField';
 
-import { TextField, withAccounts } from '../components';
-import { AccountsFromCtx } from '../components/types';
+import { TextField, AccountContext } from '../components';
 
 interface Props {
-  accounts: AccountsFromCtx;
   address?: string;
   autoFocus?: boolean;
   margin?: PropTypes.Margin;
@@ -23,11 +21,12 @@ interface Props {
 
 const MIN_LENGTH = 3;
 
-function Name({
-  accounts, address, autoFocus, onChange, onBlur, InputProps, classes,
+export default function Name({
+  address, autoFocus, onChange, onBlur, InputProps, classes,
   margin = 'normal',
   label = 'a descriptive name for this account',
 }: Props): React.ReactElement<Props> {
+  const accounts = useContext(AccountContext);
   const [name, setName] = useState('');
 
   React.useEffect(() => {
@@ -68,5 +67,3 @@ function Name({
     />
   );
 }
-
-export default withAccounts(Name);
