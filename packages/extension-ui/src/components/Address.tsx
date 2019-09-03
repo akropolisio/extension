@@ -4,11 +4,13 @@
 
 import { KeyringJson } from '@polkadot/ui-keyring/types';
 import { Prefix } from '@polkadot/util-crypto/address/types';
+import { formatBalance } from '@polkadot/util';
 
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import cn from 'classnames';
 import Identicon from '@polkadot/react-identicon';
+import Typography from '@material-ui/core/Typography';
 import settings from '@polkadot/ui-settings';
 
 import { AccountContext, AssetsContext } from './contexts';
@@ -65,9 +67,12 @@ function Address({ address, children, className, name, variant = 'polkadot', wit
         <div className='address'>{formatted || '<unknown>'}</div>
         {withBalance && (
           <div className='balance'>
-            {balance
-              ? `${balance.free} ${balance.symbol}`
-              : 'Loading ...'
+            {!balance
+              ? 'Loading ...'
+              : (<>
+                <Typography variant="body1">Total: {formatBalance(balance.freeBalance)}</Typography>
+                <Typography variant="body1">Available: {formatBalance(balance.availableBalance)}</Typography>
+              </>)
             }
           </div>
         )}

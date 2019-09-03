@@ -203,7 +203,7 @@ export default class Extension {
   }
 
   private subscribeAssets(id: string, port: chrome.runtime.Port): boolean {
-    return this.subscribeToObservable(id, port, this.assets.balances);
+    return this.subscribeToObservable(id, port, this.assets.assets);
   }
 
   private sendBaseAsset({ from, to, amount }: SendBaseAssetRequest): Promise<void> {

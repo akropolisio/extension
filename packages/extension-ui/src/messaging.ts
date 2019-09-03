@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AuthorizeRequest, MessageTypes, SigningRequest, Assets, SendBaseAssetRequest } from '@polkadot/extension/background/types';
+import { AuthorizeRequest, MessageTypes, SigningRequest, AssetsByAddress, SendBaseAssetRequest } from '@polkadot/extension/background/types';
 import { KeyringJson } from '@polkadot/ui-keyring/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
@@ -36,7 +36,7 @@ port.onMessage.addListener((data): void => {
     delete handlers[data.id];
   }
 
-  if (data.subscription) {
+  if (typeof data.subscription !== 'undefined') {
     (handler.subscriber as Function)(data.subscription);
   } else if (data.error) {
     handler.reject(new Error(data.error));
@@ -112,7 +112,7 @@ export async function subscribeSigning(cb: (accounts: SigningRequest[]) => void)
   return sendMessage('signing.subscribe', {}, cb);
 }
 
-export async function subscribeAssets(cb: (assets: Assets) => void): Promise<boolean> {
+export async function subscribeAssets(cb: (assets: AssetsByAddress) => void): Promise<boolean> {
   return sendMessage('assets.subscribe', {}, cb);
 }
 

@@ -49,7 +49,7 @@ export default function Popup(): React.ReactElement<{}> {
   const [accounts, setAccounts] = useState<null | KeyringJson[]>(null);
   const [authRequests, setAuthRequests] = useState<null | AuthorizeRequest[]>(null);
   const [signRequests, setSignRequests] = useState<null | SigningRequest[]>(null);
-  const [assets, setAssets] = useState<null | AssetsFromCtx>(null);
+  const [assets, setAssets] = useState<AssetsFromCtx>(null);
   const [isWelcomeDone, setWelcomeDone] = useState(false);
 
   const onAction = (to?: string): void => {

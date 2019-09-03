@@ -4,6 +4,7 @@
 
 import { SignerPayload } from '@polkadot/api/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { DerivedBalances } from '@polkadot/api-derive/types';
 
 export type MessageTypes = 'authorize.approve' | 'authorize.reject' | 'authorize.requests' | 'authorize.subscribe' | 'authorize.tab' | 'accounts.create' | 'accounts.edit' | 'accounts.forget' | 'accounts.list' | 'accounts.subscribe' | 'extrinsic.sign' | 'seed.create' | 'seed.validate' | 'signing.approve' | 'signing.cancel' | 'signing.requests' | 'signing.subscribe' | 'settings.apiUrlChanged' | 'assets.subscribe' | 'assets.sendBaseAsset';
 
@@ -11,7 +12,7 @@ export type AuthorizeRequest = [string, MessageAuthorize, string];
 
 export type SigningRequest = [string, MessageExtrinsicSign, string];
 
-export type Assets = Record<string, IAsset[]>;
+export type AssetsByAddress = Record<string, IAsset[]>;
 
 export interface MessageAuthorize {
   origin: string;
@@ -116,11 +117,6 @@ export interface IAssetBase<T extends ModuleType, P> {
   fromModule: string;
 }
 
-export type IBalanceAsset = IAssetBase<'balance', {
-  symbol: string;
-  free: string;
-  locks: string[];
-  reserved: string;
-}>;
+export type IBalanceAsset = IAssetBase<'balance', DerivedBalances>;
 
 export type IAsset = IBalanceAsset;
