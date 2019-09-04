@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AuthorizeRequest, MessageTypes, SigningRequest, AssetsByAddress, SendBaseAssetRequest } from '@polkadot/extension/background/types';
+import { AuthorizeRequest, MessageTypes, SigningRequest, AssetsByAddress, SendBaseAssetRequest, ChainState } from '@polkadot/extension/background/types';
 import { KeyringJson } from '@polkadot/ui-keyring/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
@@ -114,6 +114,10 @@ export async function subscribeSigning(cb: (accounts: SigningRequest[]) => void)
 
 export async function subscribeAssets(cb: (assets: AssetsByAddress) => void): Promise<boolean> {
   return sendMessage('assets.subscribe', {}, cb);
+}
+
+export async function subscribeChainState(cb: (state: ChainState) => void): Promise<boolean> {
+  return sendMessage('chainState.subscribe', {}, cb);
 }
 
 export async function validateSeed (suri: string, type?: KeypairType): Promise<{ address: string; suri: string }> {

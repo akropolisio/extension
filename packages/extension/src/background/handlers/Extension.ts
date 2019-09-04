@@ -210,6 +210,10 @@ export default class Extension {
     return this.assets.sendBaseUnits(from, to, amount);
   }
 
+  private subscribeChainState(id: string, port: chrome.runtime.Port): boolean {
+    return this.subscribeToObservable(id, port, this.assets.chainState);
+  }
+
   private subscribeToObservable(id: string, port: chrome.runtime.Port, target: Subscribable<any>): boolean {
     const cb = createSubscription(id, port);
     const subscription = target.subscribe(cb);
@@ -278,6 +282,9 @@ export default class Extension {
 
       case 'assets.sendBaseAsset':
         return this.sendBaseAsset(request);
+
+      case 'chainState.subscribe':
+        return this.subscribeChainState(id, port);
 
       default:
         throw new Error(`Unable to handle message of type ${type}`);

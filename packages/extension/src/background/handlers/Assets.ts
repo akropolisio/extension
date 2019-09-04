@@ -6,12 +6,14 @@ import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, tap, switchMap, first, takeWhile, filter } from 'rxjs/operators';
 import { ApiRx, WsProvider } from '@polkadot/api';
 import { DerivedBalances } from '@polkadot/api-derive/types';
+import { ChainProperties } from '@polkadot/types/interfaces';
+import U32 from '@polkadot/types/primitive/U32';
 import settings from '@polkadot/ui-settings';
 import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
 import { SubjectInfo as AccountsInfo } from '@polkadot/ui-keyring/observable/types';
 
 import Injected from '../../page/Injected';
-import { ModuleType, IModuleInterface, IAsset, IBalanceAsset, AssetsByAddress } from '../types';
+import { ModuleType, IModuleInterface, IAsset, IBalanceAsset, AssetsByAddress, ChainState } from '../types';
 import State from './State';
 
 const defaultAssetModules: AssetModules = {
@@ -47,6 +49,8 @@ export default class AssetsClass {
   private readonly _assetModules = new BehaviorSubject<AssetModules | null>(null);
 
   public readonly assets = new BehaviorSubject<AssetsByAddress | null>(null);
+
+  public readonly chainState = new BehaviorSubject<ChainState | null>(null);
 
   constructor(state: State) {
     this._state = state;
@@ -95,6 +99,12 @@ export default class AssetsClass {
         return assetsWithAddress.reduce((acc, { address, assets }) => ({ ...acc, [address]: assets }), {});
       }),
     ).subscribe(value => this.assets.next(value));
+
+    this._api.asObservable().pipe(
+      tap(() => this.chainState.next(null)),
+      filter((value): value is ApiRx => !!value),
+      switchMap(this.loadChainState),
+    ).subscribe(value => this.chainState.next(value));
   }
 
   public updateApiUrl(url: string) {
@@ -111,7 +121,7 @@ export default class AssetsClass {
       }, defaultAssetModules);
   }
 
-  public loadAssets(
+  private loadAssets(
     api: ApiRx, assetModules: AssetModules, addresses: string[],
   ): Observable<Array<{ address: string, assets: IAsset[] }>> {
     return combineLatest(addresses.map(
@@ -121,7 +131,7 @@ export default class AssetsClass {
     ));
   }
 
-  public loadAssetsByAddress(api: ApiRx, assetModules: AssetModules, address: string): Observable<IAsset[]> {
+  private loadAssetsByAddress(api: ApiRx, assetModules: AssetModules, address: string): Observable<IAsset[]> {
     return combineLatest(
       assetModules.balance.map(this.loadBalanceAssets.bind(this, api, address)),
       // ... handlers for other assets
@@ -131,13 +141,33 @@ export default class AssetsClass {
   private loadBalanceAssets(api: ApiRx, address: string, fromModule: string): Observable<IBalanceAsset> {
     const balance$: Observable<DerivedBalances> = api.derive.balances.all(address);
 
-    return balance$.pipe(map(
+    return balance$.pipe(map<DerivedBalances, IBalanceAsset>(
       balance => ({
         type: 'balance',
         fromModule,
-        payload: balance,
+        payload: {
+          available: balance.availableBalance.toString(),
+          free: balance.freeBalance.toString(),
+          locked: balance.lockedBalance.toString(),
+          reserved: balance.reservedBalance.toString(),
+          vested: balance.vestedBalance.toString(),
+          voting: balance.votingBalance.toString(),
+        },
       }),
     ));
+  }
+
+  private loadChainState(api: ApiRx): Observable<ChainState> {
+    const chainProps$: Observable<ChainProperties> = api.rpc.system.properties();
+
+    return chainProps$.pipe(map<ChainProperties, ChainState>(
+      props => ({
+        baseUnitProps: {
+          decimals: props.tokenDecimals.unwrapOr(new U32(15)).toNumber(),
+          symbol: props.tokenSymbol.unwrapOr('DEV').toString(),
+        }
+      })
+    ))
   }
 
   public async sendBaseUnits(from: string, to: string, amount: string) {

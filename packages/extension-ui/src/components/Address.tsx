@@ -70,8 +70,8 @@ function Address({ address, children, className, name, variant = 'polkadot', wit
             {!balance
               ? 'Loading ...'
               : (<>
-                <Typography variant="body1">Total: {formatBalance(balance.freeBalance)}</Typography>
-                <Typography variant="body1">Available: {formatBalance(balance.availableBalance)}</Typography>
+                <Typography variant="body1">Total: {formatBalance(balance.free)}</Typography>
+                <Typography variant="body1">Available: {formatBalance(balance.available)}</Typography>
               </>)
             }
           </div>

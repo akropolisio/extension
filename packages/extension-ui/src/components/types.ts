@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AuthorizeRequest, SigningRequest, AssetsByAddress } from '@polkadot/extension/background/types';
+import { AuthorizeRequest, SigningRequest, AssetsByAddress, ChainState } from '@polkadot/extension/background/types';
 import { KeyringJson } from '@polkadot/ui-keyring/types';
 
 export type OmitProps<T, K> = Pick<T, Exclude<keyof T, K>>;
@@ -13,3 +13,4 @@ export type OnActionFromCtx = (to?: string) => void;
 export type AuthRequestsFromCtx = AuthorizeRequest[];
 export type SignRequestsFromCtx = SigningRequest[];
 export type AssetsFromCtx = AssetsByAddress | null;
+export type ChainStateFromCtx = ChainState | null;

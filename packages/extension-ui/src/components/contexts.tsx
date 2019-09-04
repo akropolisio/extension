@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AccountsFromCtx, OnActionFromCtx, AuthRequestsFromCtx, SignRequestsFromCtx, AssetsFromCtx } from './types';
+import { AccountsFromCtx, OnActionFromCtx, AuthRequestsFromCtx, SignRequestsFromCtx, AssetsFromCtx, ChainStateFromCtx } from './types';
 
 import React from 'react';
 
@@ -15,12 +15,14 @@ const AccountContext = React.createContext<AccountsFromCtx>([]);
 const ActionContext = React.createContext<OnActionFromCtx>(noop);
 const AuthorizeContext = React.createContext<AuthRequestsFromCtx>([]);
 const SigningContext = React.createContext<SignRequestsFromCtx>([]);
-const AssetsContext = React.createContext<AssetsFromCtx>({});
+const AssetsContext = React.createContext<AssetsFromCtx>(null);
+const ChainStateContext = React.createContext<ChainStateFromCtx>(null);
 
 export {
   AccountContext,
   ActionContext,
   AuthorizeContext,
   SigningContext,
-  AssetsContext
+  AssetsContext,
+  ChainStateContext
 };
