@@ -9,11 +9,14 @@ import { DerivedBalances } from '@polkadot/api-derive/types';
 import { ChainProperties } from '@polkadot/types/interfaces';
 import U32 from '@polkadot/types/primitive/U32';
 import settings from '@polkadot/ui-settings';
+import keyring from '@polkadot/ui-keyring';
 import accountsObservable from '@polkadot/ui-keyring/observable/accounts';
 import { SubjectInfo as AccountsInfo } from '@polkadot/ui-keyring/observable/types';
+import { assert } from '@polkadot/util';
 
 import Injected from '../../page/Injected';
-import { ModuleType, IModuleInterface, IAsset, IBalanceAsset, AssetsByAddress, ChainState } from '../types';
+import { SendRequest } from '../../page/types';
+import { ModuleType, IModuleInterface, IAsset, IBalanceAsset, AssetsByAddress, ChainState, MessageTypes, RequestTypes, ResponseTypes, RequestExtrinsicSign } from '../types';
 import State from './State';
 
 const defaultAssetModules: AssetModules = {
@@ -37,6 +40,23 @@ const moduleInterfaces: Record<ModuleType, IModuleInterface> = {
 }
 
 type AssetModules = Record<ModuleType, string[]>;
+
+const makeSendRequest: (state: State) => SendRequest = (state: State) =>
+  async <TMessageType extends MessageTypes>(message: TMessageType, request?: RequestTypes[TMessageType], subscriber?: (data: any) => void): Promise<ResponseTypes[keyof ResponseTypes]> => {
+    switch (message) {
+      case 'pub(extrinsic.sign)': {
+        const { address } = request as RequestExtrinsicSign;
+        const pair = keyring.getPair(address);
+
+        assert(pair, 'Unable to find keypair');
+
+        return await state.signQueue('from extension', request as RequestExtrinsicSign, { address, ...pair.meta });
+      }
+      default: {
+        throw new Error(`Unable to handle message of type ${message}`);
+      };
+    }
+  }
 
 export default class AssetsClass {
 
@@ -63,14 +83,7 @@ export default class AssetsClass {
       }),
       switchMap(url => ApiRx.create({
         provider: new WsProvider(url),
-        signer: new Injected(async (message, request) => {
-          switch (message) {
-            case 'extrinsic.sign': {
-              return await this._state.signQueue('from extension', request);
-            }
-            default: return;
-          }
-        }).signer,
+        signer: new Injected(makeSendRequest(this._state)).signer,
       })),
     ).subscribe(value => this._api.next(value));
 

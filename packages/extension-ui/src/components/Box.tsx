@@ -9,15 +9,17 @@ import cn from 'classnames';
 import defaults from './defaults';
 
 interface Props {
+  banner?: React.ReactNode;
   children: React.ReactNode;
   boxTheme?: 'light' | 'dark';
   className?: string;
 }
 
-function Box({ children, className, boxTheme = 'light' }: Props): React.ReactElement<Props> {
+function Box({ banner, children, className, boxTheme = 'light' }: Props): React.ReactElement<Props> {
   return (
     <article className={cn(className, { [`box-theme_${boxTheme}`]: true })}>
       {children}
+      {banner && <div className='banner'>{banner}</div>}
     </article>
   );
 }
@@ -29,6 +31,7 @@ export default styled(Box)`
   font-family: ${defaults.fontFamily};
   font-size: ${defaults.fontSize};
   padding: 0.75rem 1rem;
+  position: relative;
 
   &.box-theme_ {
     &light {
@@ -39,5 +42,16 @@ export default styled(Box)`
       background: transparent;
       color: white;
     }
+  }
+
+  .banner {
+    background: darkorange;
+    border-radius: 0 ${defaults.borderRadius} 0 ${defaults.borderRadius};
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 `;

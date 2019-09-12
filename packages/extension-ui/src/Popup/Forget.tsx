@@ -13,7 +13,8 @@ type Props = RouteComponentProps<{ address: string }>;
 
 function Forget({ match: { params: { address } } }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
-  const onClick = (): Promise<void> =>
+
+  const _onClick = (): Promise<void> =>
     forgetAccount(address)
       .then((): void => onAction('/'))
       .catch((error: Error) => console.error(error));
@@ -22,7 +23,7 @@ function Forget({ match: { params: { address } } }: Props): React.ReactElement<P
     <Layout
       actions={[
         <BackButton key='Cancel'>Cancel</BackButton>,
-        <Button isDanger key='Forget' onClick={onClick}>Forget</Button>
+        <Button isDanger key='Forget' onClick={_onClick}>Forget</Button>
       ]}
     >
       <Layout.Content variant="primary">

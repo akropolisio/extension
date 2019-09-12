@@ -2,12 +2,11 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AuthorizeRequest, MessageTypes, SigningRequest, AssetsByAddress, SendBaseAssetRequest, ChainState } from '@polkadot/extension/background/types';
-import { KeyringJson } from '@polkadot/ui-keyring/types';
+import { AccountJson, AuthorizeRequest, SigningRequest, RequestTypes, MessageTypes, ResponseTypes, SeedLengths, SubscriptionMessageTypes, MessageTypesWithNullRequest, MessageTypesWithNoSubscriptions, MessageTypesWithSubscriptions, AssetsByAddress, ChainState, RequestBaseAssetSend } from '@polkadot/extension/background/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
 import extension from 'extensionizer';
-import { PORT_POPUP } from '@polkadot/extension/defaults';
+import { PORT_EXTENSION } from '@polkadot/extension/defaults';
 
 interface Handler {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,7 +18,7 @@ interface Handler {
 
 type Handlers = Record<string, Handler>;
 
-const port = extension.runtime.connect({ name: PORT_POPUP });
+const port = extension.runtime.connect({ name: PORT_EXTENSION });
 const handlers: Handlers = {};
 let idCounter = 0;
 
@@ -45,89 +44,92 @@ port.onMessage.addListener((data): void => {
   }
 });
 
+function sendMessage<TMessageType extends MessageTypesWithNullRequest>(message: TMessageType): Promise<ResponseTypes[TMessageType]>;
+function sendMessage<TMessageType extends MessageTypesWithNoSubscriptions>(message: TMessageType, request: RequestTypes[TMessageType]): Promise<ResponseTypes[TMessageType]>;
+function sendMessage<TMessageType extends MessageTypesWithSubscriptions>(message: TMessageType, request: RequestTypes[TMessageType], subscriber: (data: SubscriptionMessageTypes[TMessageType]) => void): Promise<ResponseTypes[TMessageType]>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sendMessage(message: MessageTypes, request: any = {}, subscriber?: (data: any) => void): Promise<any> {
+function sendMessage<TMessageType extends MessageTypes> (message: TMessageType, request?: RequestTypes[TMessageType], subscriber?: (data: any) => void): Promise<ResponseTypes[TMessageType]> {
   return new Promise((resolve, reject): void => {
     const id = `${Date.now()}.${++idCounter}`;
 
     handlers[id] = { resolve, reject, subscriber };
 
-    port.postMessage({ id, message, request });
+    port.postMessage({ id, message, request: request || {} });
   });
 }
 
-export async function editAccount(address: string, name: string): Promise<boolean> {
-  return sendMessage('accounts.edit', { address, name });
+export async function editAccount (address: string, name: string): Promise<boolean> {
+  return sendMessage('pri(accounts.edit)', { address, name });
 }
 
-export async function forgetAccount(address: string): Promise<boolean> {
-  return sendMessage('accounts.forget', { address });
+export async function forgetAccount (address: string): Promise<boolean> {
+  return sendMessage('pri(accounts.forget)', { address });
 }
 
-export async function getAccounts(): Promise<KeyringJson[]> {
-  return sendMessage('accounts.list');
+export async function rejectAuthRequest (id: string): Promise<boolean> {
+  return sendMessage('pri(authorize.reject)', { id });
 }
 
-export async function getAuthRequests(): Promise<AuthorizeRequest[]> {
-  return sendMessage('authorize.requests');
+export async function approveAuthRequest (id: string): Promise<boolean> {
+  return sendMessage('pri(authorize.approve)', { id });
 }
 
-export async function rejectAuthRequest(id: string): Promise<boolean> {
-  return sendMessage('authorize.reject', { id });
+export async function cancelSignRequest (id: string): Promise<boolean> {
+  return sendMessage('pri(signing.cancel)', { id });
 }
 
-export async function approveAuthRequest(id: string): Promise<boolean> {
-  return sendMessage('authorize.approve', { id });
+export async function approveSignPassword (id: string, password: string): Promise<boolean> {
+  return sendMessage('pri(signing.approve.password)', { id, password });
 }
 
-export async function getSignRequests(): Promise<SigningRequest[]> {
-  return sendMessage('signing.requests');
+export async function approveSignSignature (id: string, signature: string): Promise<boolean> {
+  return sendMessage('pri(signing.approve.signature)', { id, signature });
 }
 
-export async function cancelSignRequest(id: string): Promise<boolean> {
-  return sendMessage('signing.cancel', { id });
+export async function createAccountExternal (name: string, address: string, genesisHash: string): Promise<boolean> {
+  return sendMessage('pri(accounts.create.external)', { address, genesisHash, name });
 }
 
-export async function approveSignRequest(id: string, password: string): Promise<boolean> {
-  return sendMessage('signing.approve', { id, password });
+export async function createAccountSuri (name: string, password: string, suri: string, type?: KeypairType): Promise<boolean> {
+  return sendMessage('pri(accounts.create.suri)', { name, password, suri, type });
 }
 
-export async function createAccount(name: string, password: string, suri: string, type?: KeypairType): Promise<boolean> {
-  return sendMessage('accounts.create', { name, password, suri, type });
+export async function createSeed (length?: SeedLengths, type?: KeypairType): Promise<{ address: string; suri: string }> {
+  return sendMessage('pri(seed.create)', { length, type });
 }
 
-export async function createSeed(length?: number, type?: KeypairType): Promise<{ address: string; suri: string }> {
-  return sendMessage('seed.create', { length, type });
+export async function subscribeAccounts (cb: (accounts: AccountJson[]) => void): Promise<boolean> {
+  return sendMessage('pri(accounts.subscribe)', null, cb);
 }
 
-export async function subscribeAccounts(cb: (accounts: KeyringJson[]) => void): Promise<boolean> {
-  return sendMessage('accounts.subscribe', {}, cb);
+export async function subscribeAuthorize (cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
+  return sendMessage('pri(authorize.subscribe)', null, cb);
 }
 
-export async function subscribeAuthorize(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
-  return sendMessage('authorize.subscribe', {}, cb);
-}
-
-export async function subscribeSigning(cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
-  return sendMessage('signing.subscribe', {}, cb);
+export async function subscribeSigning (cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
+  return sendMessage('pri(signing.subscribe)', null, cb);
 }
 
 export async function subscribeAssets(cb: (assets: AssetsByAddress) => void): Promise<boolean> {
-  return sendMessage('assets.subscribe', {}, cb);
+  return sendMessage('pri(assets.subscribe)', null, cb);
 }
 
 export async function subscribeChainState(cb: (state: ChainState) => void): Promise<boolean> {
-  return sendMessage('chainState.subscribe', {}, cb);
+  return sendMessage('pri(chainState.subscribe)', null, cb);
 }
 
 export async function validateSeed (suri: string, type?: KeypairType): Promise<{ address: string; suri: string }> {
-  return sendMessage('seed.validate', { suri, type });
+  return sendMessage('pri(seed.validate)', { suri, type });
 }
 
-export async function notifyApiUrlChanged(apiUrl: string): Promise<void> {
-  return sendMessage('settings.apiUrlChanged', { apiUrl });
+export async function windowOpen (): Promise<boolean> {
+  return sendMessage('pri(window.open)', null);
 }
 
-export async function sendBaseAsset(request: SendBaseAssetRequest): Promise<void> {
-  return sendMessage('assets.sendBaseAsset', request);
+export async function notifyApiUrlChanged(apiUrl: string): Promise<boolean> {
+  return sendMessage('pri(settings.change.apiUrl)', { apiUrl });
+}
+
+export async function sendBaseAsset(request: RequestBaseAssetSend): Promise<boolean> {
+  return sendMessage('pri(assets.sendBaseAsset)', request);
 }

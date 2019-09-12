@@ -14,6 +14,7 @@ const manifest = require('./manifest.json');
 
 const packages = [
   'extension',
+  'extension-chains',
   'extension-inject',
   'extension-ui'
 ];
@@ -28,8 +29,8 @@ function createWebpack ({ alias = {}, context }) {
     entry: {
       background: './src/background/index.ts',
       content: './src/content.ts',
-      page: './src/page/index.ts',
-      popup: './src/popup.ts'
+      extension: './src/extension.ts',
+      page: './src/page/index.ts'
     },
     mode: ENV,
     output: {

@@ -10,7 +10,8 @@ type Props = {};
 
 export default function Welcome(): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
-  const onClick = (): void => {
+
+  const _onClick = (): void => {
     window.localStorage.setItem('welcome_read', 'ok');
     onAction();
   };
@@ -26,7 +27,7 @@ export default function Welcome(): React.ReactElement<Props> {
           <li>We don&apos;t collect keys, addresses or any information - your information never leaves this machine</li>
         </ul>
         ... we are not in the information collection business (even anonymized).
-        <Button onClick={onClick}>
+        <Button onClick={_onClick}>
           Understood, let me continue
         </Button>
       </Box>

@@ -1,5 +1,5 @@
 {
-  "version": "0.10.0-beta.2",
+  "version": "0.10.1",
   "description": "A sample signer extension for the @polkadot/api",
   "repository": "https://github.com/polkadot-js/extension",
   "author": "Jaco Greeff <jacogr@gmail.com>",
@@ -12,11 +12,11 @@
     "yarn": "^1.10.1"
   },
   "resolutions": {
-    "@polkadot/api": "^0.91.0-beta.10",
-    "@polkadot/keyring": "^1.2.0-beta.3",
-    "@polkadot/types": "^0.91.0-beta.10",
-    "@polkadot/util": "^1.2.0-beta.3",
-    "@polkadot/util-crypto": "^1.2.0-beta.3",
+    "@polkadot/api": "^0.91.1",
+    "@polkadot/keyring": "^1.2.1",
+    "@polkadot/types": "^0.91.1",
+    "@polkadot/util": "^1.2.1",
+    "@polkadot/util-crypto": "^1.2.1",
     "babel-core": "^7.0.0-bridge.0",
     "typescript": "^3.6.2"
   },
@@ -27,12 +27,13 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx . && tsc --noEmit --pretty",
     "clean": "polkadot-dev-clean-build",
     "postinstall": "polkadot-dev-yarn-only",
+    "start": "yarn watch",
     "test": "echo \"no tests... yet\"",
     "watch": "cd packages/extension && webpack --config webpack.config.js --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
-    "@polkadot/dev-react": "^0.31.0-beta.6",
-    "@polkadot/ts": "^0.1.69"
+    "@polkadot/dev-react": "^0.31.0-beta.7",
+    "@polkadot/ts": "^0.1.71"
   }
 }

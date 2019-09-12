@@ -29,4 +29,3 @@ export { TextField as TextFormField } from 'final-form-material-ui';
 
 export * from './contexts';
 export { default as defaults } from './defaults';
-export { default as unicode } from './unicode';

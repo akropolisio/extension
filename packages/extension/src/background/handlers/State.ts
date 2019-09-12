@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AuthorizeRequest, MessageAuthorize, MessageExtrinsicSign, MessageExtrinsicSignResponse, SigningRequest } from '../types';
+import { AccountJson, AuthorizeRequest, RequestAuthorizeTab, RequestExtrinsicSign, ResponseExtrinsicSign, SigningRequest } from '../types';
 
 import extension from 'extensionizer';
 import { BehaviorSubject } from 'rxjs';
@@ -11,7 +11,7 @@ import { assert } from '@polkadot/util';
 interface AuthRequest {
   id: string;
   idStr: string;
-  request: MessageAuthorize;
+  request: RequestAuthorizeTab;
   resolve: (result: boolean) => void;
   reject: (error: Error) => void;
   url: string;
@@ -26,9 +26,10 @@ type AuthUrls = Record<string, {
 }>;
 
 interface SignRequest {
+  account: AccountJson;
   id: string;
-  request: MessageExtrinsicSign;
-  resolve: (result: MessageExtrinsicSignResponse) => void;
+  request: RequestExtrinsicSign;
+  resolve: (result: ResponseExtrinsicSign) => void;
   reject: (error: Error) => void;
   url: string;
 }
@@ -71,13 +72,13 @@ export default class State {
   public get allAuthRequests (): AuthorizeRequest[] {
     return Object
       .values(this._authRequests)
-      .map(({ id, request, url }): AuthorizeRequest => [id, request, url]);
+      .map(({ id, request, url }): AuthorizeRequest => ({ id, request, url }));
   }
 
   public get allSignRequests (): SigningRequest[] {
     return Object
       .values(this._signRequests)
-      .map(({ id, request, url }): SigningRequest => [id, request, url]);
+      .map(({ account, id, request, url }): SigningRequest => ({ account, id, request, url }));
   }
 
   private popupClose (popupId?: number): void {
@@ -96,7 +97,7 @@ export default class State {
       left: 150,
       top: 150,
       type: 'popup',
-      url: extension.extension.getURL('popup.html'),
+      url: extension.extension.getURL('index.html'),
       width: 360
     }, (window?: chrome.windows.Window): void => {
       if (window) {
@@ -126,8 +127,8 @@ export default class State {
     };
   }
 
-  private signComplete = (id: string, popupId: number, fn: Function): (result: MessageExtrinsicSignResponse | Error) => void => {
-    return (result: MessageExtrinsicSignResponse | Error): void => {
+  private signComplete = (id: string, popupId: number, fn: Function): (result: ResponseExtrinsicSign | Error) => void => {
+    return (result: ResponseExtrinsicSign | Error): void => {
       delete this._signRequests[id];
       this.updateIconSign(true, popupId);
 
@@ -169,7 +170,7 @@ export default class State {
     this.updateIcon(shouldClose, popupId);
   }
 
-  public async authorizeUrl (url: string, request: MessageAuthorize): Promise<boolean> {
+  public async authorizeUrl (url: string, request: RequestAuthorizeTab): Promise<boolean> {
     const idStr = this.stripUrl(url);
 
     if (this._authUrls[idStr]) {
@@ -212,12 +213,13 @@ export default class State {
     return this._signRequests[id];
   }
 
-  public signQueue (url: string, request: MessageExtrinsicSign): Promise<MessageExtrinsicSignResponse> {
+  public signQueue (url: string, request: RequestExtrinsicSign, account: AccountJson): Promise<ResponseExtrinsicSign> {
     const id = getId();
 
     return new Promise((resolve, reject): void => {
       let popupId = -1;
       this._signRequests[id] = {
+        account,
         id,
         request,
         resolve: result => {

@@ -2,7 +2,8 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { Signer as SignerInterface, SignerPayload, SignerResult } from '@polkadot/api/types';
+import { Signer as SignerInterface, SignerResult } from '@polkadot/api/types';
+import { SignerPayloadJSON } from '@polkadot/types/types';
 import { SendRequest } from './types';
 
 let sendRequest: SendRequest;
@@ -16,9 +17,9 @@ export default class Signer implements SignerInterface {
     sendRequest = _sendRequest;
   }
 
-  public async signPayload (payload: SignerPayload): Promise<SignerResult> {
+  public async signPayload (payload: SignerPayloadJSON): Promise<SignerResult> {
     const id = ++nextId;
-    const result = await sendRequest('extrinsic.sign', payload);
+    const result = await sendRequest('pub(extrinsic.sign)', payload);
 
     // we add an internal id (number) - should have a mapping from the
     // extension id (string) -> internal id (number) if we wish to provide

@@ -2,6 +2,8 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
+import { AccountJson } from '@polkadot/extension/background/types';
+
 import React, { useContext, useState } from 'react';
 import { routes } from '@polkadot/extension-ui/routes';
 import { makeStyles } from '@material-ui/styles';
@@ -20,8 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-interface Props {
-  address: string;
+interface Props extends AccountJson {
   className?: string;
   onClick(address: string): void;
 }
@@ -32,16 +33,15 @@ export default function Account({ address, className, onClick }: Props): React.R
   const [editedName, setName] = useState<string | null>(null);
   const classes = useStyles();
 
-  const toggleEdit = (): void =>
-    setEditing(!isEditing);
-  const saveChanges = (): void => {
+  const _toggleEdit = (): void => setEditing(!isEditing);
+  const _saveChanges = (): void => {
     if (editedName && editedName !== name) {
       editAccount(address, editedName)
         .then((): void => onAction())
         .catch((error: Error) => console.error(error));
     }
 
-    toggleEdit();
+    _toggleEdit();
   };
 
   return (
@@ -59,7 +59,6 @@ export default function Account({ address, className, onClick }: Props): React.R
               address={address}
               autoFocus
               label={null}
-              onBlur={saveChanges}
               onChange={setName}
               margin="dense"
               classes={{
@@ -71,12 +70,12 @@ export default function Account({ address, className, onClick }: Props): React.R
             />
           </Grid>
           <Grid item>
-            <Button variant="outlined" size="small" onClick={toggleEdit}>Save</Button>
+            <Button variant="outlined" size="small" onClick={_saveChanges}>Save</Button>
           </Grid>
         </>)}
         {!isEditing && (<>
           <Grid item>
-            <Button variant="outlined" size="small" onClick={toggleEdit}>Edit</Button>
+            <Button variant="outlined" size="small" onClick={_toggleEdit}>Edit</Button>
           </Grid>
           <Grid item>
             <LinkButton variant="outlined" size="small" to={routes.account.forget.address.getRedirectPath({ address })}>

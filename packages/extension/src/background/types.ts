@@ -2,14 +2,30 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { SignerPayload } from '@polkadot/api/types';
+import { InjectedAccount } from '@polkadot/extension-inject/types';
+import { SignerPayloadJSON } from '@polkadot/types/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
-export type MessageTypes = 'authorize.approve' | 'authorize.reject' | 'authorize.requests' | 'authorize.subscribe' | 'authorize.tab' | 'accounts.create' | 'accounts.edit' | 'accounts.forget' | 'accounts.list' | 'accounts.subscribe' | 'extrinsic.sign' | 'seed.create' | 'seed.validate' | 'signing.approve' | 'signing.cancel' | 'signing.requests' | 'signing.subscribe' | 'settings.apiUrlChanged' | 'assets.subscribe' | 'assets.sendBaseAsset' | 'chainState.subscribe';
+type KeysWithDefinedValues<T> = {
+  [K in keyof T]: T[K] extends undefined ? never : K
+}[keyof T];
 
-export type AuthorizeRequest = [string, MessageAuthorize, string];
+type NoUndefinedValues<T> = {
+  [K in KeysWithDefinedValues<T>]: T[K]
+};
 
-export type SigningRequest = [string, MessageExtrinsicSign, string];
+type IsNull<T, K extends keyof T> = { [K1 in Exclude<keyof T, K>]: T[K1] } & T[K] extends null ? K : never;
+
+type NullKeys<T> = { [K in keyof T]: IsNull<T, K> }[keyof T];
+
+export type SeedLengths = 12 | 24;
+
+export interface AccountJson {
+  address: string;
+  genesisHash?: string | null;
+  isExternal?: boolean;
+  name?: string;
+}
 
 export type AssetsByAddress = Record<string, IAsset[]>;
 
@@ -20,95 +36,200 @@ export type ChainState = {
   };
 }
 
-export interface MessageAuthorize {
+export interface AuthorizeRequest {
+  id: string;
+  request: RequestAuthorizeTab;
+  url: string;
+}
+
+export interface SigningRequest {
+  account: AccountJson;
+  id: string;
+  request: RequestExtrinsicSign;
+  url: string;
+}
+
+// [MessageType]: [RequestType, ResponseType, SubscriptionMessageType?]
+export interface RequestSignatures {
+  // private/internal requests, i.e. from a popup
+  'pri(accounts.create.external)': [RequestAccountCreateExternal, boolean];
+  'pri(accounts.create.suri)': [RequestAccountCreateSuri, boolean];
+  'pri(accounts.edit)': [RequestAccountEdit, boolean];
+  'pri(accounts.forget)': [RequestAccountForget, boolean];
+  'pri(accounts.subscribe)': [RequestAccountSubscribe, boolean, AccountJson[]];
+  'pri(authorize.approve)': [RequestAuthorizeApprove, boolean];
+  'pri(authorize.reject)': [RequestAuthorizeReject, boolean];
+  'pri(authorize.subscribe)': [RequestAuthorizeSubscribe, boolean, AuthorizeRequest[]];
+  'pri(seed.create)': [RequestSeedCreate, ResponseSeedCreate];
+  'pri(seed.validate)': [RequestSeedValidate, ResponseSeedValidate];
+  'pri(signing.approve.password)': [RequestSigningApprovePassword, boolean];
+  'pri(signing.approve.signature)': [RequestSigningApproveSignature, boolean];
+  'pri(signing.cancel)': [RequestSigningCancel, boolean];
+  'pri(signing.subscribe)': [RequestSigningSubscribe, boolean, SigningRequest[]];
+  'pri(window.open)': [null, boolean];
+  'pri(settings.change.apiUrl)': [RequestApiUrlChange, boolean];
+  'pri(assets.subscribe)': [RequestAssetsSubscribe, boolean, AssetsByAddress];
+  'pri(assets.sendBaseAsset)': [RequestBaseAssetSend, boolean];
+  'pri(chainState.subscribe)': [RequestChainStateSubscribe, boolean, ChainState];
+  // public/external requests, i.e. from a page
+  'pub(accounts.list)': [RequestAccountList, InjectedAccount[]];
+  'pub(accounts.subscribe)': [RequestAccountSubscribe, boolean, InjectedAccount[]];
+  'pub(authorize.tab)': [RequestAuthorizeTab, null];
+  'pub(extrinsic.sign)': [RequestExtrinsicSign, ResponseExtrinsicSign];
+}
+
+export type MessageTypes = keyof RequestSignatures;
+
+// Requests
+
+export type RequestTypes = {
+  [MessageType in keyof RequestSignatures]: RequestSignatures[MessageType][0]
+};
+
+export type MessageTypesWithNullRequest = NullKeys<RequestTypes>
+
+export interface TransportRequestMessage<TMessageType extends MessageTypes> {
+  id: string;
+  message: TMessageType;
+  origin: 'page' | 'extension';
+  request: RequestTypes[TMessageType];
+}
+
+export interface RequestAuthorizeTab {
   origin: string;
 }
 
-export interface MessageAuthorizeApprove {
+export interface RequestAuthorizeApprove {
   id: string;
 }
 
-export interface MessageAuthorizeReject {
+export interface RequestAuthorizeReject {
   id: string;
 }
 
-export interface MessageRequest {
-  id: string;
-  message: MessageTypes;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  request: any;
-}
+export type RequestAuthorizeSubscribe = null;
 
-export interface MessageResponse {
-  error?: string;
-  id: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  response?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  subscription?: any;
-}
-
-export interface MessageAccountCreate {
+export interface RequestAccountCreateExternal {
+  address: string;
+  genesisHash?: string | null;
   name: string;
+}
+
+export interface RequestAccountCreateSuri {
+  name: string;
+  genesisHash?: string | null;
   password: string;
   suri: string;
   type?: KeypairType;
 }
 
-export interface MessageAccountEdit {
+export interface RequestAccountEdit {
   address: string;
+  genesisHash?: string | null;
   name: string;
 }
 
-export interface MessageAccountForget {
+export interface RequestAccountForget {
   address: string;
 }
 
-export interface MessageExtrinsicSignApprove {
+export type RequestAccountList = null;
+
+export type RequestAccountSubscribe = null;
+
+export type RequestExtrinsicSign = SignerPayloadJSON;
+
+export interface RequestSigningApprovePassword {
   id: string;
   password: string;
 }
 
-export interface MessageExtrinsicSignCancel {
-  id: string;
-}
-
-export type MessageExtrinsicSign = SignerPayload;
-
-export interface MessageExtrinsicSignResponse {
+export interface RequestSigningApproveSignature {
   id: string;
   signature: string;
 }
 
-export interface MessageSeedCreateResponse {
-  address: string;
-  suri: string;
+export interface RequestSigningCancel {
+  id: string;
 }
 
-export interface MessageSeedCreate {
-  length?: 12 | 24;
+export type RequestSigningSubscribe = null;
+
+export interface RequestSeedCreate {
+  length?: SeedLengths;
   type?: KeypairType;
 }
 
-export interface MessageSeedValidate {
+export interface RequestSeedValidate {
   suri: string;
   type?: KeypairType;
 }
 
-export interface MessageSeedValidateResponse {
-  address: string;
-  suri: string;
-}
-
-export interface MessageApiUrlChanged {
+export interface RequestApiUrlChange {
   apiUrl: string;
 }
 
-export interface SendBaseAssetRequest {
+export type RequestAssetsSubscribe = null;
+
+export interface RequestBaseAssetSend {
   to: string;
   from: string;
   amount: string;
 }
+
+export type RequestChainStateSubscribe = null;
+
+// Responses
+
+export type ResponseTypes = {
+  [MessageType in keyof RequestSignatures]: RequestSignatures[MessageType][1]
+};
+
+interface TransportResponseMessageSub<TMessageType extends MessageTypesWithSubscriptions> {
+  error?: string;
+  id: string;
+  response?: ResponseTypes[TMessageType];
+  subscription?: SubscriptionMessageTypes[TMessageType];
+}
+
+interface TransportResponseMessageNoSub<TMessageType extends MessageTypesWithNoSubscriptions> {
+  error?: string;
+  id: string;
+  response?: ResponseTypes[TMessageType];
+}
+
+export type TransportResponseMessage<TMessageType extends MessageTypes> =
+  TMessageType extends MessageTypesWithNoSubscriptions
+    ? TransportResponseMessageNoSub<TMessageType>
+    : TMessageType extends MessageTypesWithSubscriptions
+      ? TransportResponseMessageSub<TMessageType>
+      : never;
+
+export interface ResponseExtrinsicSign {
+  id: string;
+  signature: string;
+}
+
+export interface ResponseSeedCreate {
+  address: string;
+  suri: string;
+}
+
+export interface ResponseSeedValidate {
+  address: string;
+  suri: string;
+}
+
+// Subscriptions
+
+export type SubscriptionMessageTypes = NoUndefinedValues<{
+  [MessageType in keyof RequestSignatures]: RequestSignatures[MessageType][2]
+}>;
+
+export type MessageTypesWithSubscriptions = keyof SubscriptionMessageTypes;
+export type MessageTypesWithNoSubscriptions = Exclude<MessageTypes, keyof SubscriptionMessageTypes>
+
+// Other
 
 export type ModuleType = 'balance';
 

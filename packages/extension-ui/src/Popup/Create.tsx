@@ -5,7 +5,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 
 import { Address, Button, Loading, ActionContext, BackButton, TextField } from '../components';
-import { createAccount, createSeed, validateSeed } from '../messaging';
+import { createAccountSuri, createSeed, validateSeed } from '../messaging';
 import { Name, Password } from '../partials';
 import Layout from './Layout';
 
@@ -29,16 +29,16 @@ export default function Create({ type }: Props): React.ReactElement<Props> {
       .catch((error: Error) => console.error(error));
   }, []);
 
-  const onChangeSeed = React.useCallback((event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const _onChangeSeed = React.useCallback((event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     setSeed(event.currentTarget.value);
     return validateSeed(event.currentTarget.value)
       .then(setAccount)
       .catch((): void => setAccount(null))
   }, []);
 
-  const onCreate = (): void => {
+  const _onCreate = (): void => {
     if (name && password && account) {
-      createAccount(name, password, account.suri)
+      createAccountSuri(name, password, account.suri)
         .then((): void => onAction('/'))
         .catch((error: Error) => console.error(error));
     }
@@ -48,7 +48,7 @@ export default function Create({ type }: Props): React.ReactElement<Props> {
     <Layout
       actions={[
         <BackButton key='Cancel'>Cancel</BackButton>,
-        <Button key='Create' onClick={onCreate}>{type === 'createNew' ? 'Create' : 'Import'}</Button>
+        <Button key='Create' onClick={_onCreate}>{type === 'createNew' ? 'Create' : 'Import'}</Button>
       ]}
     >
       <Layout.Content variant="secondary">
@@ -56,7 +56,7 @@ export default function Create({ type }: Props): React.ReactElement<Props> {
           {(account || type === 'import') && (
             <TextField
               value={seed}
-              onChange={onChangeSeed}
+              onChange={_onChangeSeed}
               fullWidth
               multiline
               rowsMax="3"

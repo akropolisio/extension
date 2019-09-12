@@ -9,12 +9,14 @@ import settings from '@polkadot/ui-settings';
 import { setAddressPrefix } from '@polkadot/util-crypto';
 
 import { Dropdown, Button, BackButton, TextField } from '../../components';
-import { notifyApiUrlChanged } from '../../messaging';
+import { notifyApiUrlChanged, windowOpen } from '../../messaging';
 import Layout from '../Layout';
 
+// There are probably better ways, but since we set the popup size, use that
+const isPopup = window.innerWidth <= 480;
 const prefixOptions = settings.availablePrefixes.map(({ text, value }): { text: string; value: string } => ({
   text: value === -1
-    ? 'Substrate (default)'
+    ? 'Default (Substrate or as specified)'
     : text,
   value: `${value}`
 }));
@@ -99,6 +101,11 @@ export default function Settings(): React.ReactElement<{}> {
           />
           {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (
             <Button onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
+          )}
+          {isPopup && (
+            <Button onClick={windowOpen}>
+              Open extension in new window
+            </Button>
           )}
         </>)}
       </Layout.Content>

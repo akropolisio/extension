@@ -6,7 +6,8 @@ const rawTree = {
     forget: {
       address: getParam(null),
     },
-    import: null,
+    importSeed: null,
+    importQr: null,
   },
   assets: {
     address: getParam({

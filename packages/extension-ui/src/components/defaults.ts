@@ -18,6 +18,7 @@ const defaults = {
   btnColorDanger: '#f5f6f7',
   btnPadding: '0.75rem 1rem',
   boxBorder: 'none', // '0.25rem solid #e2e1e0',
+  boxMargin: '0.75rem 0',
   boxPadding: '0 0.25rem',
   boxShadow: 'none',
   boxBg: '#F7F5FB',

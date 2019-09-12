@@ -31,7 +31,7 @@ export default function Name({
 
   React.useEffect(() => {
     const account = accounts.find((account): boolean => account.address === address);
-    const startValue = account && account.meta.name;
+    const startValue = account && account.name;
     setName(startValue || '');
 
   }, [accounts, address]);
