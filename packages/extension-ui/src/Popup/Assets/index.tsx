@@ -7,7 +7,8 @@ import { RouteComponentProps, Switch, Route } from 'react-router';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 
-import { BackButton, Button, Typography, TextFormField } from '../../components';
+import { BackButton, Button, Typography } from '../../components';
+import { TextField } from '../../components/form';
 import { sendBaseAsset } from '../../messaging';
 import { routes } from '../../routes';
 import BaseLayout from './BaseLayout';
@@ -63,7 +64,7 @@ function Assets (_props: Props): React.ReactElement<Props> {
                 <Typography variant="h6" align="center">Send transaction</Typography>
                 <Field
                   name={fields.address}
-                  component={TextFormField}
+                  component={TextField}
                   fullWidth
                   variant="outlined"
                   label='Address'
@@ -78,7 +79,7 @@ function Assets (_props: Props): React.ReactElement<Props> {
                 />
                 <Field
                   name={fields.amount}
-                  component={TextFormField}
+                  component={TextField}
                   fullWidth
                   variant="outlined"
                   label='Amount'
