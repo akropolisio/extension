@@ -100,14 +100,14 @@ export default function Settings(): React.ReactElement<{}> {
             }}
           />
           {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (
-            <Button onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
-          )}
-          {isPopup && (
-            <Button onClick={windowOpen}>
-              Open extension in new window
-            </Button>
+            <Button fullWidth onClick={_onApplyCustomUrl}>Apply Custom URL</Button>
           )}
         </>)}
+        {isPopup && (
+          <Button variant="outlined" fullWidth onClick={windowOpen}>
+            Open extension in new window
+          </Button>
+        )}
       </Layout.Content>
     </Layout>
   );

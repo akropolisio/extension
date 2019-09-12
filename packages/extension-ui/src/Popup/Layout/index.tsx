@@ -40,11 +40,15 @@ function Layout(props: IProps) {
       </div>
       {!!actions && (
         <div className="actions">
-          {actions.map((action, index) => (
-            <div className="action" key={index}>
-              {action}
-            </div>
-          ))}
+          <Grid container spacing={1} justify="center">
+            {actions.map((action, index) => (
+              <Grid item xs={6} key={index}>
+                <Grid container direction="column">
+                  {action}
+                </Grid>
+              </Grid>
+            ))}
+          </Grid>
         </div>
       )}
     </div>
@@ -72,15 +76,7 @@ const Component = styled(Layout)`
   }
 
   .actions {
-    padding: 24px;
-    margin: -10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-  }
-
-  .action {
-    padding: 10px;
+    padding: 16px;
   }
 
   .settings-icon {

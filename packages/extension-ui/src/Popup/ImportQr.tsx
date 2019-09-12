@@ -29,7 +29,7 @@ export default function ImportQr(): React.ReactElement<Props> {
     <Layout
       actions={[
         <BackButton key='Cancel'>Cancel</BackButton>,
-        <Button key='Create' onClick={_onCreate}>'Add account'</Button>
+        <Button key='Create' onClick={_onCreate}>Add account</Button>
       ]}
     >
       <Layout.Content variant="secondary">
