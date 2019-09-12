@@ -7,13 +7,13 @@ import { Link, Typography, Grid } from '../../components';
 import { SettingsIcon } from '../../components/icons';
 import { routes } from '../../routes';
 
-interface IProps {
+interface Props {
   children: React.ReactNode;
   className?: string;
   actions?: React.ReactNode[];
 }
 
-function Layout(props: IProps) {
+function Layout (props: Props): React.ReactElement<Props> {
   const { className, actions, children } = props;
 
   const activeNode = settings.availableNodes.find(node => node.value.toString() === settings.apiUrl);

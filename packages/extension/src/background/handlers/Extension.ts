@@ -4,7 +4,7 @@
 
 import { Subscribable } from 'rxjs';
 import { SubjectInfo } from '@polkadot/ui-keyring/observable/types';
-import { AccountJson, AuthorizeRequest, RequestAccountCreateExternal, RequestAccountCreateSuri, RequestAccountEdit, RequestAuthorizeApprove, RequestAuthorizeReject, RequestSigningApprovePassword, RequestSigningApproveSignature, RequestSigningCancel, RequestSeedCreate, ResponseSeedCreate, RequestSeedValidate, ResponseSeedValidate, RequestAccountForget, SigningRequest, RequestApiUrlChange, RequestBaseAssetSend, RequestTypes, ResponseTypes, MessageTypes } from '../types';
+import { AccountJson, AuthorizeRequest, RequestAccountCreateExternal, RequestAccountCreateSuri, RequestAccountEdit, RequestAuthorizeApprove, RequestAuthorizeReject, RequestSigningApprovePassword, RequestSigningApproveSignature, RequestSigningCancel, RequestSeedCreate, ResponseSeedCreate, RequestSeedValidate, ResponseSeedValidate, RequestAccountForget, SigningRequest, RequestApiUrlChange, RequestBaseAssetSend, RequestTypes, ResponseTypes, MessageTypes, SubscriptionMessageTypes, MessageTypesWithSubscriptions } from '../types';
 
 import extension from 'extensionizer';
 import keyring from '@polkadot/ui-keyring';
@@ -31,7 +31,7 @@ export default class Extension {
   private state: State;
   private assets: Assets;
 
-  public constructor(state: State, assets: Assets) {
+  public constructor (state: State, assets: Assets) {
     this.state = state;
     this.assets = assets;
   }
@@ -215,25 +215,25 @@ export default class Extension {
     return true;
   }
 
-  private async updateApiUrl({ apiUrl }: RequestApiUrlChange): Promise<boolean> {
-    await this.assets.updateApiUrl(apiUrl);
+  private updateApiUrl ({ apiUrl }: RequestApiUrlChange): boolean {
+    this.assets.updateApiUrl(apiUrl);
     return true;
   }
 
-  private subscribeAssets(id: string, port: chrome.runtime.Port): boolean {
+  private subscribeAssets (id: string, port: chrome.runtime.Port): boolean {
     return this.subscribeToObservable(id, port, this.assets.assets);
   }
 
-  private async sendBaseAsset({ from, to, amount }: RequestBaseAssetSend): Promise<boolean> {
+  private async sendBaseAsset ({ from, to, amount }: RequestBaseAssetSend): Promise<boolean> {
     await this.assets.sendBaseUnits(from, to, amount);
     return true;
   }
 
-  private subscribeChainState(id: string, port: chrome.runtime.Port): boolean {
+  private subscribeChainState (id: string, port: chrome.runtime.Port): boolean {
     return this.subscribeToObservable(id, port, this.assets.chainState);
   }
 
-  private subscribeToObservable(id: string, port: chrome.runtime.Port, target: Subscribable<any>): boolean {
+  private subscribeToObservable <T extends SubscriptionMessageTypes[MessageTypesWithSubscriptions]> (id: string, port: chrome.runtime.Port, target: Subscribable<T>): boolean {
     const cb = createSubscription(id, port);
     const subscription = target.subscribe(cb);
 

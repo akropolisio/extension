@@ -7,9 +7,9 @@ import { routes } from '../../routes';
 import BaseLayout from './BaseLayout';
 import Layout from '../Layout';
 
-type IProps = RouteComponentProps<{ address: string }>
+type Props = RouteComponentProps<{ address: string }>
 
-function PreviewPage(props: IProps) {
+function PreviewPage (props: Props): React.ReactElement<Props> {
   const { address } = props.match.params;
   const [activeTab, setActiveTab] = React.useState(0);
 
@@ -21,6 +21,7 @@ function PreviewPage(props: IProps) {
     <BaseLayout
       addressActions={[
         <LinkButton
+          key="Buy"
           color="secondary"
           variant="outlined"
           to={routes.assets.address.buy.getRedirectPath({ address })}
@@ -28,12 +29,13 @@ function PreviewPage(props: IProps) {
           Buy
         </LinkButton>,
         <LinkButton
+          key="Send"
           color="secondary"
           variant="outlined"
           to={routes.assets.address.send.getRedirectPath({ address })}
         >
           Send
-        </LinkButton>,
+        </LinkButton>
       ]}
       mainActions={[<BackButton key="Back" />]}
       contentProps={{ pt: 0 }}

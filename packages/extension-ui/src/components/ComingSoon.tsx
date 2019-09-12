@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from './Box';
 
-function ComingSoon() {
+function ComingSoon (): React.ReactElement<{}> {
   // const { classes } = props;
   return (
     <Box>

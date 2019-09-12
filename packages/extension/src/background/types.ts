@@ -27,7 +27,7 @@ export interface AccountJson {
   name?: string;
 }
 
-export type AssetsByAddress = Record<string, IAsset[]>;
+export type AssetsByAddress = Record<string, Asset[]>;
 
 export type ChainState = {
   baseUnitProps: {
@@ -68,9 +68,9 @@ export interface RequestSignatures {
   'pri(signing.subscribe)': [RequestSigningSubscribe, boolean, SigningRequest[]];
   'pri(window.open)': [null, boolean];
   'pri(settings.change.apiUrl)': [RequestApiUrlChange, boolean];
-  'pri(assets.subscribe)': [RequestAssetsSubscribe, boolean, AssetsByAddress];
+  'pri(assets.subscribe)': [RequestAssetsSubscribe, boolean, AssetsByAddress | null];
   'pri(assets.sendBaseAsset)': [RequestBaseAssetSend, boolean];
-  'pri(chainState.subscribe)': [RequestChainStateSubscribe, boolean, ChainState];
+  'pri(chainState.subscribe)': [RequestChainStateSubscribe, boolean, ChainState | null];
   // public/external requests, i.e. from a page
   'pub(accounts.list)': [RequestAccountList, InjectedAccount[]];
   'pub(accounts.subscribe)': [RequestAccountSubscribe, boolean, InjectedAccount[]];
@@ -233,18 +233,18 @@ export type MessageTypesWithNoSubscriptions = Exclude<MessageTypes, keyof Subscr
 
 export type ModuleType = 'balance';
 
-export type IModuleInterface = {
+export interface ModuleInterface {
   query: string[];
   tx: string[];
 }
 
-export interface IAssetBase<T extends ModuleType, P> {
+export interface AssetBase<T extends ModuleType, P> {
   type: T;
   payload: P;
   fromModule: string;
 }
 
-export type IBalanceAsset = IAssetBase<'balance', {
+export type BalanceAsset = AssetBase<'balance', {
   free: string;
   locked: string;
   available: string;
@@ -253,4 +253,4 @@ export type IBalanceAsset = IAssetBase<'balance', {
   vested: string;
 }>;
 
-export type IAsset = IBalanceAsset;
+export type Asset = BalanceAsset;

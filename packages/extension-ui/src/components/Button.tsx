@@ -14,19 +14,19 @@ const useStyles = makeStyles({
     '&$isDanger': {
       '&$contained': {
         background: defaults.btnBgDanger,
-        color: defaults.btnColorDanger,
-      },
-    },
+        color: defaults.btnColorDanger
+      }
+    }
   },
   isDanger: {},
-  contained: {},
+  contained: {}
 });
 
 type Props = Omit<ButtonProps, 'classes'> & {
   isDanger?: boolean;
 }
 
-function Button({ isDanger, variant = 'contained', color = 'primary', ...rest }: Props): React.ReactElement<Props> {
+function Button ({ isDanger, variant = 'contained', color = 'primary', ...rest }: Props): React.ReactElement<Props> {
   const classes = useStyles();
 
   return (
@@ -36,7 +36,7 @@ function Button({ isDanger, variant = 'contained', color = 'primary', ...rest }:
       {...rest}
       classes={{
         root: cn(classes.root, { [classes.isDanger]: isDanger }),
-        contained: classes.contained,
+        contained: classes.contained
       }}
     />
   );

@@ -15,7 +15,7 @@ interface Props extends RouteComponentProps<{ address: string }> {
   contentProps?: Partial<ContentProps>;
 }
 
-function BaseLayout(props: Props): React.ReactElement<Props> {
+function BaseLayout (props: Props): React.ReactElement<Props> {
   const { match, mainActions, addressActions, children, contentProps } = props;
   const { address } = match.params;
 

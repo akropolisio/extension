@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import defaults from '../defaults';
 
-interface IProps extends React.SVGProps<SVGSVGElement> {
+interface Props extends React.SVGProps<SVGSVGElement> {
   /**
    * Node passed into the SVG element.
    */
@@ -17,31 +17,31 @@ interface IProps extends React.SVGProps<SVGSVGElement> {
    * The color of the component. It supports those theme colors that make sense for this component.
    * You can use the `htmlColor` prop to apply a color attribute to the SVG element.
    */
-  color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'error' | 'disabled',
+  color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'error' | 'disabled';
   /**
    * The component used for the root node.
    * Either a string to use a DOM element or a component.
    */
-  component?: React.ElementType,
+  component?: React.ElementType;
   /**
    * The fontSize applied to the icon. Defaults to 24px, but can be configure to inherit font size.
    */
-  fontSize?: 'inherit' | 'default' | 'small' | 'large',
+  fontSize?: 'inherit' | 'default' | 'small' | 'large';
   /**
    * Applies a color attribute to the SVG element.
    */
-  htmlColor?: string,
+  htmlColor?: string;
   /**
    * The shape-rendering attribute. The behavior of the different options is described on the
    * [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/shape-rendering).
    * If you are having issues with blurry icons you should investigate this property.
    */
-  shapeRendering?: string,
+  shapeRendering?: string;
   /**
    * Provides a human-readable title for the element that contains it.
    * https://www.w3.org/TR/SVG-access/#Equivalent
    */
-  titleAccess?: string,
+  titleAccess?: string;
   /**
    * Allows you to redefine what the coordinates without units mean inside an SVG element.
    * For example, if the SVG element is 500 (width) by 200 (height),
@@ -49,10 +49,10 @@ interface IProps extends React.SVGProps<SVGSVGElement> {
    * this means that the coordinates inside the SVG will go from the top left corner (0,0)
    * to bottom right (50,20) and each unit will be worth 10px.
    */
-  viewBox?: string,
+  viewBox?: string;
 }
 
-const SvgIcon = React.forwardRef(function SvgIcon(props: IProps, ref: React.Ref<any>) {
+const SvgIcon = React.forwardRef(function SvgIcon (props: Props, ref: React.Ref<unknown>) {
   const {
     children,
     className,
@@ -71,8 +71,8 @@ const SvgIcon = React.forwardRef(function SvgIcon(props: IProps, ref: React.Ref<
         className,
         {
           [`color_${color}`]: color !== 'inherit',
-          [`fontSize_${fontSize}`]: fontSize !== 'default',
-        },
+          [`fontSize_${fontSize}`]: fontSize !== 'default'
+        }
       )}
       focusable="false"
       viewBox={viewBox}
@@ -88,7 +88,9 @@ const SvgIcon = React.forwardRef(function SvgIcon(props: IProps, ref: React.Ref<
   );
 });
 
-export { IProps as SvgIconProps };
+SvgIcon.displayName = 'SvgIcon';
+
+export { Props as SvgIconProps };
 export default styled(SvgIcon)`
   user-select: none;
   width: 1em;

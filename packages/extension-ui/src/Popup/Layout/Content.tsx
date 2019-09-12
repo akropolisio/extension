@@ -7,13 +7,13 @@ import { ComingSoon } from '../../components';
 
 type PaddingProps = Partial<Record<'px' | 'py' | 'pt' | 'pr' | 'pb' | 'pl', number>>;
 
-interface IProps extends PaddingProps {
+interface Props extends PaddingProps {
   className?: string;
   variant: 'primary' | 'secondary';
   children?: React.ReactNode;
 }
 
-function Content(props: IProps) {
+function Content (props: Props): React.ReactElement<Props> {
   const { className, variant, children, ...rest } = props;
   return (
     <Box p={2} {...rest} className={cn(className, `variant_${variant}`)}>
@@ -22,7 +22,7 @@ function Content(props: IProps) {
   );
 }
 
-export { IProps as ContentProps };
+export { Props as ContentProps };
 export default styled(Content)`
   &.variant_ {
     &primary {

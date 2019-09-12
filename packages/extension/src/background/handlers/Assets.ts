@@ -16,33 +16,33 @@ import { assert } from '@polkadot/util';
 
 import Injected from '../../page/Injected';
 import { SendRequest } from '../../page/types';
-import { ModuleType, IModuleInterface, IAsset, IBalanceAsset, AssetsByAddress, ChainState, MessageTypes, RequestTypes, ResponseTypes, RequestExtrinsicSign } from '../types';
+import { ModuleType, ModuleInterface, Asset, BalanceAsset, AssetsByAddress, ChainState, MessageTypes, RequestTypes, ResponseTypes, RequestExtrinsicSign } from '../types';
 import State from './State';
 
 const defaultAssetModules: AssetModules = {
-  balance: [],
+  balance: []
 };
 
-const moduleInterfaces: Record<ModuleType, IModuleInterface> = {
+const moduleInterfaces: Record<ModuleType, ModuleInterface> = {
   balance: {
     query: [
       'freeBalance',
       'locks',
       'reservedBalance',
       'totalIssuance',
-      'vesting',
+      'vesting'
     ],
     tx: [
       'setBalance',
-      'transfer',
-    ],
+      'transfer'
+    ]
   }
-}
+};
 
 type AssetModules = Record<ModuleType, string[]>;
 
 const makeSendRequest: (state: State) => SendRequest = (state: State) =>
-  async <TMessageType extends MessageTypes>(message: TMessageType, request?: RequestTypes[TMessageType], subscriber?: (data: any) => void): Promise<ResponseTypes[keyof ResponseTypes]> => {
+  async <TMessageType extends MessageTypes>(message: TMessageType, request?: RequestTypes[TMessageType]): Promise<ResponseTypes[keyof ResponseTypes]> => {
     switch (message) {
       case 'pub(extrinsic.sign)': {
         const { address } = request as RequestExtrinsicSign;
@@ -50,16 +50,35 @@ const makeSendRequest: (state: State) => SendRequest = (state: State) =>
 
         assert(pair, 'Unable to find keypair');
 
-        return await state.signQueue('from extension', request as RequestExtrinsicSign, { address, ...pair.meta });
+        const response = await state.signQueue('from extension', request as RequestExtrinsicSign, { address, ...pair.meta });
+        return response;
       }
       default: {
         throw new Error(`Unable to handle message of type ${message}`);
-      };
+      }
     }
-  }
+  };
+
+function isContainKeys (obj: {}, keys: string[]): boolean {
+  const objKeys = Object.keys(obj);
+  const extendedKeys = Array.from(new Set([...objKeys, ...keys]));
+  return objKeys.length === extendedKeys.length;
+}
+
+function findInterfaceImplements (api: ApiRx, { query, tx }: ModuleInterface): string[] {
+  const modules: string[] = Array.from(new Set([
+    ...Object.keys(api.query),
+    ...Object.keys(api.tx)
+  ]));
+
+  return modules.filter(moduleName => {
+    const isQueryImplements = !!api.query[moduleName] && isContainKeys(api.query[moduleName], query);
+    const isTxImplements = !!api.tx[moduleName] && isContainKeys(api.tx[moduleName], tx);
+    return isQueryImplements && isTxImplements;
+  });
+}
 
 export default class AssetsClass {
-
   private _state: State;
 
   private readonly _apiUrl = new BehaviorSubject(settings.apiUrl);
@@ -72,7 +91,7 @@ export default class AssetsClass {
 
   public readonly chainState = new BehaviorSubject<ChainState | null>(null);
 
-  constructor(state: State) {
+  constructor (state: State) {
     this._state = state;
 
     this._apiUrl.asObservable().pipe(
@@ -83,78 +102,78 @@ export default class AssetsClass {
       }),
       switchMap(url => ApiRx.create({
         provider: new WsProvider(url),
-        signer: new Injected(makeSendRequest(this._state)).signer,
-      })),
+        signer: new Injected(makeSendRequest(this._state)).signer
+      }))
     ).subscribe(value => this._api.next(value));
 
     this._api.asObservable().pipe(
       tap(() => this._assetModules.next(null)),
       filter((value): value is ApiRx => !!value),
-      map(this.getAssetModules),
+      map(this.getAssetModules.bind(this))
     ).subscribe(value => this._assetModules.next(value));
 
     combineLatest(
       this._api.asObservable(),
       this._assetModules.asObservable(),
-      accountsObservable.subject.asObservable(),
+      accountsObservable.subject.asObservable()
     ).pipe(
-      tap(([api, assetModules, _accounts]) => (!api || !assetModules) && this.assets.next(null)),
+      tap(([api, assetModules]) => (!api || !assetModules) && this.assets.next(null)),
       filter((value): value is [ApiRx, AssetModules, AccountsInfo] => {
         const api: ApiRx | null = value[0];
         const assetModules: AssetModules | null = value[1];
         return Boolean(api && assetModules);
       }),
-      switchMap(([api, assetModules, _accounts]) => {
-        const addresses = Object.values(_accounts).map(({ json }) => json.address);
+      switchMap(([api, assetModules, accounts]) => {
+        const addresses = Object.values(accounts).map(({ json }) => json.address);
         return this.loadAssets(api, assetModules, addresses);
       }),
       map(assetsWithAddress => {
         return assetsWithAddress.reduce((acc, { address, assets }) => ({ ...acc, [address]: assets }), {});
-      }),
+      })
     ).subscribe(value => this.assets.next(value));
 
     this._api.asObservable().pipe(
       tap(() => this.chainState.next(null)),
       filter((value): value is ApiRx => !!value),
-      switchMap(this.loadChainState),
+      switchMap(this.loadChainState.bind(this))
     ).subscribe(value => this.chainState.next(value));
   }
 
-  public updateApiUrl(url: string) {
+  public updateApiUrl (url: string): void {
     this._apiUrl.next(url);
   }
 
-  private getAssetModules(api: ApiRx): AssetModules {
+  private getAssetModules (api: ApiRx): AssetModules {
     return (Object.keys(moduleInterfaces) as ModuleType[])
       .reduce<AssetModules>((acc, cur) => {
-        return {
-          ...acc,
-          [cur]: findInterfaceImplements(api, moduleInterfaces[cur]),
-        }
-      }, defaultAssetModules);
+      return {
+        ...acc,
+        [cur]: findInterfaceImplements(api, moduleInterfaces[cur])
+      };
+    }, defaultAssetModules);
   }
 
-  private loadAssets(
-    api: ApiRx, assetModules: AssetModules, addresses: string[],
-  ): Observable<Array<{ address: string, assets: IAsset[] }>> {
+  private loadAssets (
+    api: ApiRx, assetModules: AssetModules, addresses: string[]
+  ): Observable<Array<{ address: string; assets: Asset[] }>> {
     return combineLatest(addresses.map(
       address => this.loadAssetsByAddress(api, assetModules, address).pipe(
-        map(assets => ({ address, assets })),
-      ),
+        map(assets => ({ address, assets }))
+      )
     ));
   }
 
-  private loadAssetsByAddress(api: ApiRx, assetModules: AssetModules, address: string): Observable<IAsset[]> {
+  private loadAssetsByAddress (api: ApiRx, assetModules: AssetModules, address: string): Observable<Asset[]> {
     return combineLatest(
-      assetModules.balance.map(this.loadBalanceAssets.bind(this, api, address)),
+      assetModules.balance.map(this.loadBalanceAssets.bind(this, api, address))
       // ... handlers for other assets
-    )
+    );
   }
 
-  private loadBalanceAssets(api: ApiRx, address: string, fromModule: string): Observable<IBalanceAsset> {
+  private loadBalanceAssets (api: ApiRx, address: string, fromModule: string): Observable<BalanceAsset> {
     const balance$: Observable<DerivedBalances> = api.derive.balances.all(address);
 
-    return balance$.pipe(map<DerivedBalances, IBalanceAsset>(
+    return balance$.pipe(map<DerivedBalances, BalanceAsset>(
       balance => ({
         type: 'balance',
         fromModule,
@@ -164,55 +183,36 @@ export default class AssetsClass {
           locked: balance.lockedBalance.toString(),
           reserved: balance.reservedBalance.toString(),
           vested: balance.vestedBalance.toString(),
-          voting: balance.votingBalance.toString(),
-        },
-      }),
+          voting: balance.votingBalance.toString()
+        }
+      })
     ));
   }
 
-  private loadChainState(api: ApiRx): Observable<ChainState> {
+  private loadChainState (api: ApiRx): Observable<ChainState> {
     const chainProps$: Observable<ChainProperties> = api.rpc.system.properties();
 
     return chainProps$.pipe(map<ChainProperties, ChainState>(
       props => ({
         baseUnitProps: {
           decimals: props.tokenDecimals.unwrapOr(new U32(15)).toNumber(),
-          symbol: props.tokenSymbol.unwrapOr('DEV').toString(),
+          symbol: props.tokenSymbol.unwrapOr('DEV').toString()
         }
       })
-    ))
+    ));
   }
 
-  public async sendBaseUnits(from: string, to: string, amount: string) {
+  public async sendBaseUnits (from: string, to: string, amount: string): Promise<void> {
     const api = await this._api.asObservable().pipe(
       filter((value): value is ApiRx => !!value),
-      first(),
+      first()
     ).toPromise();
 
     const transfer = api.tx.balances.transfer(to, amount);
     const tx = transfer.signAndSend(from).pipe(
-      takeWhile(({ status }) => !status.isFinalized, true),
+      takeWhile(({ status }) => !status.isFinalized, true)
     );
 
     await tx.toPromise();
   }
-}
-
-function findInterfaceImplements(api: ApiRx, { query, tx }: IModuleInterface): string[] {
-  const modules: string[] = Array.from(new Set([
-    ...Object.keys(api.query),
-    ...Object.keys(api.tx),
-  ]));
-
-  return modules.filter(moduleName => {
-    const isQueryImplements = !!api.query[moduleName] && isContainKeys(api.query[moduleName], query);
-    const isTxImplements = !!api.tx[moduleName] && isContainKeys(api.tx[moduleName], tx);
-    return isQueryImplements && isTxImplements;
-  })
-}
-
-function isContainKeys(obj: {}, keys: string[]): boolean {
-  const objKeys = Object.keys(obj);
-  const extendedKeys = Array.from(new Set([...objKeys, ...keys]))
-  return objKeys.length === extendedKeys.length;
 }

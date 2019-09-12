@@ -12,7 +12,7 @@ import Layout from './Layout';
 
 type Props = {};
 
-export default function ImportQr(): React.ReactElement<Props> {
+export default function ImportQr (): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
   const [account, setAccount] = useState<null | { address: string; genesisHash: string }>(null);
   const [name, setName] = useState<string | null>(null);

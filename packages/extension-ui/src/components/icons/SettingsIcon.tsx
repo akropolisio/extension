@@ -2,7 +2,9 @@ import * as React from 'react';
 
 import SvgIcon, { SvgIconProps } from './SvgIcon';
 
-function SettingsIcon(props: Omit<SvgIconProps, 'ref' | 'children'>) {
+type Props = Omit<SvgIconProps, 'ref' | 'children'>;
+
+function SettingsIcon (props: Props): React.ReactElement<Props> {
   return (
     <SvgIcon {...props} viewBox="0 0 20 20">
       <path fill="none" d="M0 0h20v20H0V0z" />

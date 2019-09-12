@@ -222,10 +222,10 @@ export default class State {
         account,
         id,
         request,
-        resolve: result => {
+        resolve: (result): void => {
           this.signComplete(id, popupId, resolve)(result);
         },
-        reject: result => {
+        reject: (result): void => {
           this.signComplete(id, popupId, reject)(result);
         },
         url

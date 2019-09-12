@@ -24,16 +24,16 @@ const prefixOptions = settings.availablePrefixes.map(({ text, value }): { text: 
 const CUSTOM_API_URL_VALUE = '-1';
 
 const apiUrlOptions = [{ text: 'Custom node', value: CUSTOM_API_URL_VALUE }].concat(
-  settings.availableNodes.map(({ text, value }) => ({ text, value: `${value}` })),
-)
+  settings.availableNodes.map(({ text, value }) => ({ text, value: `${value}` }))
+);
 
-function isCustomNode(value: string) {
+function isCustomNode (value: string): boolean {
   return !settings.availableNodes.some(item => item.value === value);
 }
 
 const INITIAL_CUSTOM_URL = 'wss://';
 
-export default function Settings(): React.ReactElement<{}> {
+export default function Settings (): React.ReactElement<{}> {
   const [prefix, setPrefix] = useState(`${settings.prefix}`);
   const [currentApiUrl, setCurrentApiUrl] = useState(settings.apiUrl);
   const [selectedApiUrl, selectApiUrl] = useState(isCustomNode(settings.apiUrl) ? '' : `${settings.apiUrl}`);
@@ -49,11 +49,11 @@ export default function Settings(): React.ReactElement<{}> {
     settings.set({ prefix });
   };
 
-  const _saveApiUrl = (value: string) => {
+  const _saveApiUrl = (value: string): void => {
     settings.set({ apiUrl: value });
     setCurrentApiUrl(value);
     notifyApiUrlChanged(value);
-  }
+  };
 
   const _onChangeUrl = (value: string): void => {
     selectApiUrl(value);
@@ -96,7 +96,7 @@ export default function Settings(): React.ReactElement<{}> {
             label='custom endpoint URL'
             margin="normal"
             InputLabelProps={{
-              shrink: true,
+              shrink: true
             }}
           />
           {!!customApiUrl && customApiUrl !== INITIAL_CUSTOM_URL && customApiUrl !== currentApiUrl && (

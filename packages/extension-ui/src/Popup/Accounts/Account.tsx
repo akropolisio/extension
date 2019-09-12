@@ -15,11 +15,11 @@ import { Name } from '../../partials';
 const useStyles = makeStyles({
   nameInputMarginDense: {
     paddingTop: 6.5,
-    paddingBottom: 6.5,
+    paddingBottom: 6.5
   },
   inputRoot: {
-    margin: 0,
-  },
+    margin: 0
+  }
 });
 
 interface Props extends AccountJson {
@@ -27,7 +27,7 @@ interface Props extends AccountJson {
   onClick(address: string): void;
 }
 
-export default function Account({ address, className, onClick }: Props): React.ReactElement<Props> {
+export default function Account ({ address, className, onClick }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
   const [isEditing, setEditing] = useState(false);
   const [editedName, setName] = useState<string | null>(null);
@@ -62,10 +62,10 @@ export default function Account({ address, className, onClick }: Props): React.R
               onChange={setName}
               margin="dense"
               classes={{
-                root: classes.inputRoot,
+                root: classes.inputRoot
               }}
               InputProps={{
-                classes: { inputMarginDense: classes.nameInputMarginDense },
+                classes: { inputMarginDense: classes.nameInputMarginDense }
               }}
             />
           </Grid>

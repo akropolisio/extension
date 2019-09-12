@@ -22,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-function View({ children, className }: Props): React.ReactElement<Props> {
+function View ({ children, className }: Props): React.ReactElement<Props> {
   return (
     <main className={className}>
       <GlobalStyle />

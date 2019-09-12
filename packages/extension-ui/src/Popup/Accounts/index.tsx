@@ -9,19 +9,19 @@ import { routes } from '../../routes';
 import Layout from '../Layout';
 import Account from './Account';
 
-export default function Accounts(): React.ReactElement<{}> {
+export default function Accounts (): React.ReactElement<{}> {
   const accounts = useContext(AccountContext);
   const onAction = useContext(ActionContext);
   const mediaAllowed = useContext(MediaContext);
 
   const _onAddressClick = React.useCallback((address: string) => {
-    onAction(routes.assets.address.getRedirectPath({ address }))
+    onAction(routes.assets.address.getRedirectPath({ address }));
   }, []);
 
   const actions = [
     <LinkButton key="Create" to={routes.account.create.getRedirectPath()} size="small">Create account</LinkButton>,
     <LinkButton key="Import Seed" to={routes.account.importSeed.getRedirectPath()} size="small">Import from seed</LinkButton>,
-    mediaAllowed && <LinkButton key="Import QR" to={routes.account.importQr.getRedirectPath()} size="small">Import from QR</LinkButton>,
+    mediaAllowed && <LinkButton key="Import QR" to={routes.account.importQr.getRedirectPath()} size="small">Import from QR</LinkButton>
   ].filter(Boolean);
 
   return (

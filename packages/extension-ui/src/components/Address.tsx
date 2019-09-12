@@ -32,7 +32,7 @@ interface Props {
 }
 
 // find an account in our list
-function findAccount(accounts: AccountJson[], publicKey: Uint8Array): AccountJson | null {
+function findAccount (accounts: AccountJson[], publicKey: Uint8Array): AccountJson | null {
   const pkStr = publicKey.toString();
 
   return accounts.find(({ address }): boolean =>
@@ -41,7 +41,7 @@ function findAccount(accounts: AccountJson[], publicKey: Uint8Array): AccountJso
 }
 
 // recodes an supplied address using the prefix/genesisHash, include the actual saved account & chain
-function recodeAddress(address: string, accounts: AccountJson[], genesisHash?: string | null): [string, AccountJson | null, Chain] {
+function recodeAddress (address: string, accounts: AccountJson[], genesisHash?: string | null): [string, AccountJson | null, Chain] {
   // decode and create a shortcut for the encoded address
   const publicKey = decodeAddress(address);
 
@@ -57,7 +57,7 @@ function recodeAddress(address: string, accounts: AccountJson[], genesisHash?: s
   ];
 }
 
-function Address({ address, children, className, genesisHash, name, variant = 'polkadot', withBalance = false, onClick, boxTheme }: Props): React.ReactElement<Props> {
+function Address ({ address, children, className, genesisHash, name, variant = 'polkadot', withBalance = false, onClick, boxTheme }: Props): React.ReactElement<Props> {
   const accounts = useContext(AccountContext);
   const [account, setAccount] = useState<AccountJson | null>(null);
   const [chain, setChain] = useState<Chain | null>(null);

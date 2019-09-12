@@ -21,10 +21,10 @@ interface Props {
 
 const MIN_LENGTH = 3;
 
-export default function Name({
+export default function Name ({
   address, autoFocus, onChange, onBlur, InputProps, classes,
   margin = 'normal',
-  label = 'a descriptive name for this account',
+  label = 'a descriptive name for this account'
 }: Props): React.ReactElement<Props> {
   const accounts = useContext(AccountContext);
   const [name, setName] = useState('');
@@ -33,7 +33,6 @@ export default function Name({
     const account = accounts.find((account): boolean => account.address === address);
     const startValue = account && account.name;
     setName(startValue || '');
-
   }, [accounts, address]);
 
   const isError = !!name && name.length < MIN_LENGTH;
@@ -59,10 +58,10 @@ export default function Name({
       error={isError}
       InputProps={{
         autoFocus,
-        ...InputProps,
+        ...InputProps
       }}
       InputLabelProps={{
-        shrink: true,
+        shrink: true
       }}
     />
   );

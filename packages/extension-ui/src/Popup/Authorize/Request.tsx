@@ -18,7 +18,7 @@ interface Props {
   url: string;
 }
 
-function Request({ authId, className, isFirst, request: { origin }, url }: Props): React.ReactElement<Props> {
+function Request ({ authId, className, isFirst, request: { origin }, url }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
   const _onApprove = (): Promise<void> =>
     approveAuthRequest(authId)

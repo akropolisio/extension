@@ -110,11 +110,11 @@ export async function subscribeSigning (cb: (accounts: SigningRequest[]) => void
   return sendMessage('pri(signing.subscribe)', null, cb);
 }
 
-export async function subscribeAssets(cb: (assets: AssetsByAddress) => void): Promise<boolean> {
+export async function subscribeAssets (cb: (assets: AssetsByAddress | null) => void): Promise<boolean> {
   return sendMessage('pri(assets.subscribe)', null, cb);
 }
 
-export async function subscribeChainState(cb: (state: ChainState) => void): Promise<boolean> {
+export async function subscribeChainState (cb: (state: ChainState | null) => void): Promise<boolean> {
   return sendMessage('pri(chainState.subscribe)', null, cb);
 }
 
@@ -126,10 +126,10 @@ export async function windowOpen (): Promise<boolean> {
   return sendMessage('pri(window.open)', null);
 }
 
-export async function notifyApiUrlChanged(apiUrl: string): Promise<boolean> {
+export async function notifyApiUrlChanged (apiUrl: string): Promise<boolean> {
   return sendMessage('pri(settings.change.apiUrl)', { apiUrl });
 }
 
-export async function sendBaseAsset(request: RequestBaseAssetSend): Promise<boolean> {
+export async function sendBaseAsset (request: RequestBaseAssetSend): Promise<boolean> {
   return sendMessage('pri(assets.sendBaseAsset)', request);
 }

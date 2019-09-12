@@ -5,7 +5,6 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 
-
 interface DrodownOption {
   text: string;
   value: string;
@@ -18,7 +17,7 @@ interface Props {
   value?: string;
 }
 
-function Dropdown({ label, onChange, options, value }: Props): React.ReactElement<Props> {
+function Dropdown ({ label, onChange, options, value }: Props): React.ReactElement<Props> {
   const _onChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>): void => {
     onChange && onChange(value);
   };
@@ -31,7 +30,7 @@ function Dropdown({ label, onChange, options, value }: Props): React.ReactElemen
       value={value}
       onChange={_onChange}
       SelectProps={{
-        native: true,
+        native: true
       }}
       margin="normal"
       variant="outlined"

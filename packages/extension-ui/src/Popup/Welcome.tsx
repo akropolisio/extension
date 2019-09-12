@@ -8,7 +8,7 @@ import { ActionContext, Box, Button, Header } from '../components';
 
 type Props = {};
 
-export default function Welcome(): React.ReactElement<Props> {
+export default function Welcome (): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
 
   const _onClick = (): void => {

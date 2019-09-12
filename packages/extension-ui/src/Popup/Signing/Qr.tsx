@@ -21,7 +21,7 @@ interface Props {
 
 const CMD_MORTAL = 2;
 
-function Qr({ className, onSignature, payload, request }: Props): React.ReactElement<Props> {
+function Qr ({ className, onSignature, payload, request }: Props): React.ReactElement<Props> {
   const [isScanning, setIsScanning] = useState(false);
   const [payloadU8a, setPayloadU8a] = useState(new Uint8Array());
 

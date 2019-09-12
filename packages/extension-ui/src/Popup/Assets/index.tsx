@@ -13,24 +13,24 @@ import { routes } from '../../routes';
 import BaseLayout from './BaseLayout';
 import PreviewPage from './PreviewPage';
 
-interface IForm {
+interface FormData {
   address: string;
   amount: string;
 }
 
-const fields: { [key in keyof IForm]: key } = {
+const fields: { [key in keyof FormData]: key } = {
   address: 'address',
-  amount: 'amount',
-}
+  amount: 'amount'
+};
 
 interface Props extends RouteComponentProps<{ address: string }> {
   className?: string;
 }
 
-function Assets(_props: Props): React.ReactElement<Props> {
+function Assets (_props: Props): React.ReactElement<Props> {
   const { address } = _props.match.params;
 
-  const send = React.useCallback(async ({ address: to, amount }: IForm) => {
+  const send = React.useCallback(async ({ address: to, amount }: FormData) => {
     try {
       await sendBaseAsset({ from: address, to, amount });
       return;
@@ -46,18 +46,18 @@ function Assets(_props: Props): React.ReactElement<Props> {
         <BaseLayout
           mainActions={[
             <BackButton key="Back" />,
-            <Button key="Buy" onClick={console.log}>Buy</Button>,
+            <Button key="Buy" disabled>Buy</Button>
           ]}
         />
       </Route>
       <Route exact path={routes.assets.address.send.getRoutePath()}>
         <Form onSubmit={send} subscription={{ submitting: true, submitError: true }}>
-          {({ handleSubmit, submitting, submitError }) => (
+          {({ handleSubmit, submitting, submitError }): React.ReactElement<{}> => (
             <form onSubmit={handleSubmit} style={{ height: '100%' }}>
               <BaseLayout
                 mainActions={[
                   <BackButton key="Back" />,
-                  <Button key="Send" type="submit" disabled={submitting}>Send{submitting && 'ing'}</Button>,
+                  <Button key="Send" type="submit" disabled={submitting}>Send{submitting && 'ing'}</Button>
                 ]}
               >
                 <Typography variant="h6" align="center">Send transaction</Typography>
@@ -70,10 +70,10 @@ function Assets(_props: Props): React.ReactElement<Props> {
                   margin="normal"
                   error={false}
                   InputProps={{
-                    autoFocus: true,
+                    autoFocus: true
                   }}
                   InputLabelProps={{
-                    shrink: true,
+                    shrink: true
                   }}
                 />
                 <Field
@@ -85,7 +85,7 @@ function Assets(_props: Props): React.ReactElement<Props> {
                   margin="normal"
                   error={false}
                   InputLabelProps={{
-                    shrink: true,
+                    shrink: true
                   }}
                 />
                 {!!submitError && <Typography variant='body1' color="error">{submitError}</Typography>}

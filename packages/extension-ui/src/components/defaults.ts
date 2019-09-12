@@ -58,19 +58,19 @@ const defaults = {
   },
   palette: {
     primary: {
-      main: '#6931b6',
+      main: '#6931b6'
     },
     secondary: {
-      main: '#fff',
+      main: '#fff'
     },
     action: {
       active: 'rgba(0, 0, 0, 0.54)',
-      disabled: 'rgba(0, 0, 0, 0.26)',
+      disabled: 'rgba(0, 0, 0, 0.26)'
     },
     error: {
-      main: '#f44336',
+      main: '#f44336'
     }
-  },
+  }
 };
 
 export default defaults;

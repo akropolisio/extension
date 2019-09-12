@@ -28,7 +28,7 @@ import Assets from './Assets';
 import { routes } from '../routes';
 
 // Request permission for video, based on access we can hide/show import
-async function requestMediaAccess(): Promise<boolean> {
+async function requestMediaAccess (): Promise<boolean> {
   try {
     await navigator.mediaDevices.getUserMedia({ video: true });
 
@@ -50,15 +50,15 @@ setAddressPrefix((prefix === -1 ? 42 : prefix) as Prefix);
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#613AAF',
+      main: '#613AAF'
     },
     secondary: {
-      main: '#ffffff',
-    },
-  },
+      main: '#ffffff'
+    }
+  }
 });
 
-export default function Popup(): React.ReactElement<{}> {
+export default function Popup (): React.ReactElement<{}> {
   const [accounts, setAccounts] = useState<null | AccountJson[]>(null);
   const [authRequests, setAuthRequests] = useState<null | AuthorizeRequest[]>(null);
   const [mediaAllowed, setMediaAllowed] = useState(false);
@@ -90,7 +90,7 @@ export default function Popup(): React.ReactElement<{}> {
       subscribeAuthorize(setAuthRequests),
       subscribeSigning(setSignRequests),
       subscribeAssets(setAssets),
-      subscribeChainState(handleChainStateChanging),
+      subscribeChainState(handleChainStateChanging)
     ]).catch((error: Error) => console.error(error));
     _onAction();
   }, []);

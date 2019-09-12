@@ -13,7 +13,7 @@ interface Props {
   type: 'createNew' | 'import';
 }
 
-export default function Create({ type }: Props): React.ReactElement<Props> {
+export default function Create ({ type }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
   const [seed, setSeed] = useState<string>('');
   const [account, setAccount] = useState<null | { address: string; suri: string }>(null);
@@ -33,7 +33,7 @@ export default function Create({ type }: Props): React.ReactElement<Props> {
     setSeed(event.currentTarget.value);
     return validateSeed(event.currentTarget.value)
       .then(setAccount)
-      .catch((): void => setAccount(null))
+      .catch((): void => setAccount(null));
   }, []);
 
   const _onCreate = (): void => {
@@ -66,10 +66,10 @@ export default function Create({ type }: Props): React.ReactElement<Props> {
               error={type === 'import' && !!seed && !account}
               InputProps={{
                 readOnly: type === 'createNew',
-                autoFocus: type === 'import',
+                autoFocus: type === 'import'
               }}
               InputLabelProps={{
-                shrink: true,
+                shrink: true
               }}
             />
           )}

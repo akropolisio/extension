@@ -15,7 +15,7 @@ interface Props {
   className?: string;
 }
 
-function Box({ banner, children, className, boxTheme = 'light' }: Props): React.ReactElement<Props> {
+function Box ({ banner, children, className, boxTheme = 'light' }: Props): React.ReactElement<Props> {
   return (
     <article className={cn(className, { [`box-theme_${boxTheme}`]: true })}>
       {children}

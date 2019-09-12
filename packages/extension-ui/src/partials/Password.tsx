@@ -13,7 +13,7 @@ interface Props {
 
 const MIN_LENGTH = 6;
 
-export default function Password({ autoFocus, onChange }: Props): React.ReactElement<Props> {
+export default function Password ({ autoFocus, onChange }: Props): React.ReactElement<Props> {
   const [pass1, setPass1] = useState('');
   const [pass2, setPass2] = useState('');
 
@@ -44,10 +44,10 @@ export default function Password({ autoFocus, onChange }: Props): React.ReactEle
         margin="normal"
         error={!!pass1 && pass1.length < MIN_LENGTH}
         InputProps={{
-          autoFocus,
+          autoFocus
         }}
         InputLabelProps={{
-          shrink: true,
+          shrink: true
         }}
       />
       {(pass1.length >= MIN_LENGTH) && (
@@ -61,10 +61,10 @@ export default function Password({ autoFocus, onChange }: Props): React.ReactEle
           margin="normal"
           error={!!pass2 && pass1 !== pass2}
           InputProps={{
-            autoFocus,
+            autoFocus
           }}
           InputLabelProps={{
-            shrink: true,
+            shrink: true
           }}
         />
       )}

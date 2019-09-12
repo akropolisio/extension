@@ -11,7 +11,7 @@ import Layout from './Layout';
 
 type Props = RouteComponentProps<{ address: string }>;
 
-function Forget({ match: { params: { address } } }: Props): React.ReactElement<Props> {
+function Forget ({ match: { params: { address } } }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
 
   const _onClick = (): Promise<void> =>
