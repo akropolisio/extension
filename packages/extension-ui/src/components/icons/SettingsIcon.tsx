@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import SvgIcon, { SvgIconProps } from './SvgIcon';
+import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 
 type Props = Omit<SvgIconProps, 'ref' | 'children'>;
 

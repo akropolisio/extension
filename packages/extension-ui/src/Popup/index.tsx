@@ -13,7 +13,7 @@ import { setAddressPrefix } from '@polkadot/util-crypto';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 
-import { Loading } from '../components';
+import { GlobalLoader } from '../components';
 import { AccountContext, ActionContext, AuthorizeContext, MediaContext, SigningContext, AssetsContext, ChainStateContext } from '../components/contexts';
 import { subscribeAccounts, subscribeAuthorize, subscribeSigning, subscribeAssets, subscribeChainState } from '../messaging';
 import Accounts from './Accounts';
@@ -104,8 +104,8 @@ export default function Popup (): React.ReactElement<{}> {
     : Welcome;
 
   return (
-    <Loading>{accounts && authRequests && signRequests && chainState && (
-      <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      {accounts && authRequests && signRequests && chainState ? (
         <ActionContext.Provider value={_onAction}>
           <AccountContext.Provider value={accounts}>
             <AuthorizeContext.Provider value={authRequests}>
@@ -133,7 +133,7 @@ export default function Popup (): React.ReactElement<{}> {
             </AuthorizeContext.Provider>
           </AccountContext.Provider>
         </ActionContext.Provider>
-      </ThemeProvider>
-    )}</Loading>
+      ) : <GlobalLoader />}
+    </ThemeProvider>
   );
 }

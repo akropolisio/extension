@@ -19,6 +19,7 @@ export { default as TextArea } from './TextArea';
 export { default as Tip } from './Tip';
 export { default as View } from './View';
 export { default as ComingSoon } from './ComingSoon';
+export { default as GlobalLoader } from './GlobalLoader/GlobalLoader';
 
 export { default as Grid } from '@material-ui/core/Grid';
 export { default as Tabs } from '@material-ui/core/Tabs';
