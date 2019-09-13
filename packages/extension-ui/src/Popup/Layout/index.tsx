@@ -11,29 +11,38 @@ interface Props {
   children: React.ReactNode;
   className?: string;
   actions?: React.ReactNode[];
+  headerContent?: React.ReactNode;
 }
 
 function Layout (props: Props): React.ReactElement<Props> {
-  const { className, actions, children } = props;
+  const { className, actions, headerContent, children } = props;
 
   const activeNode = settings.availableNodes.find(node => node.value.toString() === settings.apiUrl);
 
   return (
     <div className={className}>
       <Grid container spacing={2} wrap="nowrap" className="header">
-        <Grid item zeroMinWidth>
-          <Typography noWrap>
-            {activeNode
-              ? activeNode.text
-              : 'Custom node'
-            }
-          </Typography>
-        </Grid>
-        <Grid item xs>
-          <Link to={routes.settings.getRedirectPath()}>
-            <SettingsIcon color="primary" className="settings-icon" />
-          </Link>
-        </Grid>
+        {headerContent ? (
+          <Grid item zeroMinWidth>
+            {headerContent}
+          </Grid>
+        ) : (
+            <>
+              <Grid item zeroMinWidth>
+                <Typography noWrap>
+                  {activeNode
+                    ? activeNode.text
+                    : 'Custom node'
+                  }
+                </Typography>
+              </Grid>
+              <Grid item xs>
+                <Link to={routes.settings.getRedirectPath()}>
+                  <SettingsIcon color="primary" className="settings-icon" />
+                </Link>
+              </Grid>
+            </>
+        )}
       </Grid>
       <div className="content">
         {children}

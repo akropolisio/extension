@@ -4,7 +4,8 @@
 
 import React, { useContext } from 'react';
 
-import { ActionContext, Box, Button, Header } from '../components';
+import { ActionContext, Button, Typography } from '../components';
+import Layout from './Layout';
 
 type Props = {};
 
@@ -17,20 +18,19 @@ export default function Welcome (): React.ReactElement<Props> {
   };
 
   return (
-    <div>
-      <Header label='welcome' />
-      <Box>
-        Before we start, just a couple of notes regarding use -
-        <ul>
+    <Layout
+      headerContent={<Typography variant="h4">Welcome</Typography>}
+      actions={[<Button key="ok" onClick={_onClick}>Continue</Button>]}
+    >
+      <Layout.Content variant="secondary">
+        <Typography variant="body1" gutterBottom>Before we start, just a couple of notes regarding use -</Typography>
+        <Typography component="ul" variant="body1" gutterBottom>
           <li>We do not send any clicks, pageviews or events to a central server</li>
           <li>We do not use any trackers or analytics</li>
           <li>We don&apos;t collect keys, addresses or any information - your information never leaves this machine</li>
-        </ul>
-        ... we are not in the information collection business (even anonymized).
-        <Button onClick={_onClick}>
-          Understood, let me continue
-        </Button>
-      </Box>
-    </div>
+        </Typography>
+        <Typography variant="body1">... we are not in the information collection business (even anonymized).</Typography>
+      </Layout.Content>
+    </Layout>
   );
 }
