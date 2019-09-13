@@ -20,7 +20,6 @@ export default function Welcome (): React.ReactElement<Props> {
   return (
     <Layout
       headerContent={<Typography variant="h4">Welcome</Typography>}
-      actions={[<Button key="ok" onClick={_onClick}>Continue</Button>]}
     >
       <Layout.Content variant="secondary">
         <Typography variant="body1" gutterBottom>Before we start, just a couple of notes regarding use -</Typography>
@@ -31,6 +30,9 @@ export default function Welcome (): React.ReactElement<Props> {
         </Typography>
         <Typography variant="body1">... we are not in the information collection business (even anonymized).</Typography>
       </Layout.Content>
+      <Layout.Actions>
+        <Button onClick={_onClick}>Continue</Button>
+      </Layout.Actions>
     </Layout>
   );
 }

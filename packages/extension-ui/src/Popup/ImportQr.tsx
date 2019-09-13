@@ -26,12 +26,7 @@ export default function ImportQr (): React.ReactElement<Props> {
   };
 
   return (
-    <Layout
-      actions={[
-        <BackButton key='Cancel'>Cancel</BackButton>,
-        <Button key='Create' onClick={_onCreate}>Add account</Button>
-      ]}
-    >
+    <Layout>
       <Layout.Content variant="secondary">
         <Loading>
           {!account && <QrScanAddress onScan={setAccount} />}
@@ -49,6 +44,10 @@ export default function ImportQr (): React.ReactElement<Props> {
           )}
         </Loading>
       </Layout.Content>
+      <Layout.Actions>
+        <BackButton>Cancel</BackButton>
+        <Button onClick={_onCreate}>Add account</Button>
+      </Layout.Actions>
     </Layout>
   );
 }

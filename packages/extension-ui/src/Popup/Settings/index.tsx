@@ -71,9 +71,7 @@ export default function Settings (): React.ReactElement<{}> {
   };
 
   return (
-    <Layout
-      actions={[<BackButton key='Cancel'>Cancel</BackButton>]}
-    >
+    <Layout>
       <Layout.Content variant="secondary">
         <Dropdown
           label='display addresses formatted for'
@@ -109,6 +107,9 @@ export default function Settings (): React.ReactElement<{}> {
           </Button>
         )}
       </Layout.Content>
+      <Layout.Actions>
+        <BackButton>Cancel</BackButton>
+      </Layout.Actions>
     </Layout>
   );
 }

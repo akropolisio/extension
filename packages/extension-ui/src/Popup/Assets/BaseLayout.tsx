@@ -20,7 +20,7 @@ function BaseLayout (props: Props): React.ReactElement<Props> {
   const { address } = match.params;
 
   return (
-    <Layout actions={mainActions}>
+    <Layout>
       <Layout.Content variant="primary">
         <Address withBalance address={address} boxTheme="dark">
           {addressActions && !!addressActions.length && (
@@ -35,6 +35,9 @@ function BaseLayout (props: Props): React.ReactElement<Props> {
       <Layout.Content variant="secondary" {...contentProps}>
         {children}
       </Layout.Content>
+      <Layout.Actions>
+        {mainActions}
+      </Layout.Actions>
     </Layout>
   );
 }

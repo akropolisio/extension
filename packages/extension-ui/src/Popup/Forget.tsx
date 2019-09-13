@@ -20,18 +20,17 @@ function Forget ({ match: { params: { address } } }: Props): React.ReactElement<
       .catch((error: Error) => console.error(error));
 
   return (
-    <Layout
-      actions={[
-        <BackButton key='Cancel'>Cancel</BackButton>,
-        <Button isDanger key='Forget' onClick={_onClick}>Forget</Button>
-      ]}
-    >
+    <Layout>
       <Layout.Content variant="primary">
         <Address address={address} boxTheme="dark" />
       </Layout.Content>
       <Layout.Content variant="secondary">
         <Tip header='danger' type='error'>You are about to remove the account. This means that you will not be able to access it via this extension anymore. If you wish to recover it, you would need to use the seed.</Tip>
       </Layout.Content>
+      <Layout.Actions>
+        <BackButton>Cancel</BackButton>
+        <Button isDanger onClick={_onClick}>Forget</Button>
+      </Layout.Actions>
     </Layout>
   );
 }

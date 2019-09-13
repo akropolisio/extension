@@ -18,14 +18,8 @@ export default function Accounts (): React.ReactElement<{}> {
     onAction(routes.assets.address.getRedirectPath({ address }));
   }, []);
 
-  const actions = [
-    <LinkButton key="Create" to={routes.account.create.getRedirectPath()} size="small">Create account</LinkButton>,
-    <LinkButton key="Import Seed" to={routes.account.importSeed.getRedirectPath()} size="small">Import from seed</LinkButton>,
-    mediaAllowed && <LinkButton key="Import QR" to={routes.account.importQr.getRedirectPath()} size="small">Import from QR</LinkButton>
-  ].filter(Boolean);
-
   return (
-    <Layout actions={actions}>
+    <Layout>
       <Layout.Content variant="secondary">
         {
           (accounts.length === 0)
@@ -41,6 +35,11 @@ export default function Accounts (): React.ReactElement<{}> {
             )
         }
       </Layout.Content>
+      <Layout.Actions>
+        <LinkButton to={routes.account.create.getRedirectPath()} size="small">Create account</LinkButton>
+        <LinkButton to={routes.account.importSeed.getRedirectPath()} size="small">Import from seed</LinkButton>
+        {mediaAllowed && <LinkButton to={routes.account.importQr.getRedirectPath()} size="small">Import from QR</LinkButton>}
+      </Layout.Actions>
     </Layout>
   );
 }

@@ -45,12 +45,7 @@ export default function Create ({ type }: Props): React.ReactElement<Props> {
   };
 
   return (
-    <Layout
-      actions={[
-        <BackButton key='Cancel'>Cancel</BackButton>,
-        <Button key='Create' onClick={_onCreate}>{type === 'createNew' ? 'Create' : 'Import'}</Button>
-      ]}
-    >
+    <Layout>
       <Layout.Content variant="secondary">
         <Loading>
           {(account || type === 'import') && (
@@ -80,6 +75,10 @@ export default function Create ({ type }: Props): React.ReactElement<Props> {
           )}
         </Loading>
       </Layout.Content>
+      <Layout.Actions>
+        <BackButton>Cancel</BackButton>
+        <Button onClick={_onCreate}>{type === 'createNew' ? 'Create' : 'Import'}</Button>
+      </Layout.Actions>
     </Layout>
   );
 }

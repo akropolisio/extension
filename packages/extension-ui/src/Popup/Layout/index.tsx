@@ -1,27 +1,57 @@
 import * as React from 'react';
-import styled from 'styled-components';
 import settings from '@polkadot/ui-settings';
+import { makeStyles } from '@material-ui/core';
 
 import Content, { ContentProps } from './Content';
+import Actions, { ActionsProps } from './Actions';
 import { Link, Typography, Grid } from '../../components';
 import { SettingsIcon } from '../../components/icons';
 import { routes } from '../../routes';
 
 interface Props {
   children: React.ReactNode;
-  className?: string;
-  actions?: React.ReactNode[];
   headerContent?: React.ReactNode;
 }
 
+const useStyles = makeStyles({
+  root: {
+    minHeight: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  },
+
+  header: {
+    minHeight: 48,
+    padding: '8px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+
+  content: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column'
+  },
+
+  settingsIcon: {
+    display: 'block'
+  }
+});
+
 function Layout (props: Props): React.ReactElement<Props> {
-  const { className, actions, headerContent, children } = props;
+  const { headerContent } = props;
+  const children = React.Children.toArray(props.children);
+  const filteredChildren = children.filter(value => React.isValidElement(value) && value.type !== Actions);
+  const actionChildren = children.filter(value => React.isValidElement(value) && value.type === Actions);
+  const cns = useStyles();
 
   const activeNode = settings.availableNodes.find(node => node.value.toString() === settings.apiUrl);
 
   return (
-    <div className={className}>
-      <Grid container spacing={2} wrap="nowrap" className="header">
+    <div className={cns.root}>
+      <Grid container spacing={2} wrap="nowrap" className={cns.header}>
         {headerContent ? (
           <Grid item zeroMinWidth>
             {headerContent}
@@ -38,66 +68,27 @@ function Layout (props: Props): React.ReactElement<Props> {
               </Grid>
               <Grid item xs>
                 <Link to={routes.settings.getRedirectPath()}>
-                  <SettingsIcon color="primary" className="settings-icon" />
+                  <SettingsIcon color="primary" className={cns.settingsIcon} />
                 </Link>
               </Grid>
             </>
         )}
       </Grid>
-      <div className="content">
-        {children}
+      <div className={cns.content}>
+        {filteredChildren}
       </div>
-      {!!actions && (
-        <div className="actions">
-          <Grid container spacing={1} justify="center">
-            {actions.map((action, index) => (
-              <Grid item xs={6} key={index}>
-                <Grid container direction="column">
-                  {action}
-                </Grid>
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-      )}
+      {actionChildren}
     </div>
   );
 }
 
-const Component = styled(Layout)`
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  .header {
-    min-height: 48px;
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .actions {
-    padding: 16px;
-  }
-
-  .settings-icon {
-    display: block;
-  }
-`;
-
-type ComponentType = typeof Component & {
+type ComponentType = typeof Layout & {
   Content: typeof Content;
+  Actions: typeof Actions;
 };
 
-(Component as ComponentType).Content = Content;
+(Layout as ComponentType).Content = Content;
+(Layout as ComponentType).Actions = Actions;
 
-export { ContentProps };
-export default Component as ComponentType;
+export { ContentProps, ActionsProps };
+export default Layout as ComponentType;
