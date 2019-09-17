@@ -9,7 +9,7 @@ import { formatBalance } from '@polkadot/util';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router';
 import settings from '@polkadot/ui-settings';
-import { setAddressPrefix } from '@polkadot/util-crypto';
+import { setSS58Format } from '@polkadot/util-crypto';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 
@@ -28,7 +28,7 @@ import Assets from './Assets';
 import { routes } from '../routes';
 
 // Request permission for video, based on access we can hide/show import
-async function requestMediaAccess (): Promise<boolean> {
+async function requestMediaAccess(): Promise<boolean> {
   try {
     await navigator.mediaDevices.getUserMedia({ video: true });
 
@@ -45,7 +45,7 @@ async function requestMediaAccess (): Promise<boolean> {
 const { prefix } = settings.get();
 
 // FIXME Duplicated in Settings, horrible...
-setAddressPrefix((prefix === -1 ? 42 : prefix) as Prefix);
+setSS58Format((prefix === -1 ? 42 : prefix) as Prefix);
 
 const theme = createMuiTheme({
   palette: {
@@ -58,7 +58,7 @@ const theme = createMuiTheme({
   }
 });
 
-export default function Popup (): React.ReactElement<{}> {
+export default function Popup(): React.ReactElement<{}> {
   const [accounts, setAccounts] = useState<null | AccountJson[]>(null);
   const [authRequests, setAuthRequests] = useState<null | AuthorizeRequest[]>(null);
   const [mediaAllowed, setMediaAllowed] = useState(false);

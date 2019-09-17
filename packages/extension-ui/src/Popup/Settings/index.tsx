@@ -6,7 +6,7 @@ import { Prefix } from '@polkadot/util-crypto/address/types';
 
 import React, { useState } from 'react';
 import settings from '@polkadot/ui-settings';
-import { setAddressPrefix } from '@polkadot/util-crypto';
+import { setSS58Format } from '@polkadot/util-crypto';
 
 import { Dropdown, Button, BackButton, TextField } from '../../components';
 import { notifyApiUrlChanged, windowOpen } from '../../messaging';
@@ -44,7 +44,7 @@ export default function Settings (): React.ReactElement<{}> {
     const prefix = parseInt(value, 10) as Prefix;
 
     setPrefix(value);
-    setAddressPrefix((prefix as number) === -1 ? 42 : prefix);
+    setSS58Format((prefix as number) === -1 ? 42 : prefix);
 
     settings.set({ prefix });
   };

@@ -5,10 +5,14 @@
 import { Metadata } from '@polkadot/types';
 
 export interface Chain {
-  name: string;
+  isUnknown?: boolean;
   genesisHash?: string;
   meta?: Metadata;
+  name: string;
+  specVersion: number;
   ss58Format: number;
   tokenDecimals: number;
   tokenSymbol: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  types: Record<string, any>;
 }

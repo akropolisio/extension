@@ -22,7 +22,7 @@ interface Props {
   url: string;
 }
 
-export default function Request ({ account: { isExternal }, isFirst, request, signId, url }: Props): React.ReactElement<Props> | null {
+export default function Request({ account: { isExternal }, isFirst, request, signId, url }: Props): React.ReactElement<Props> | null {
   const onAction = useContext(ActionContext);
   const [payload, setPayload] = useState<ExtrinsicPayload | null>(null);
   const [error, setError] = useState('');
@@ -62,7 +62,12 @@ export default function Request ({ account: { isExternal }, isFirst, request, si
       isHiddenHeader={!isFirst}
     >
       <Layout.Content variant="primary">
-        <Address withBalance address={request.address} boxTheme="dark" />
+        <Address
+          withBalance
+          boxTheme="dark"
+          address={request.address}
+          genesisHash={request.genesisHash}
+        />
       </Layout.Content>
       <Layout.Content variant="secondary">
         {isExternal && isFirst
