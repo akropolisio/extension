@@ -4,25 +4,22 @@
 
 import React, { useContext } from 'react';
 
-import { Header, SigningContext } from '../../components';
+import { SigningContext } from '../../components';
 import Request from './Request';
 
 export default function Signing (): React.ReactElement<{}> {
   const requests = useContext(SigningContext);
 
-  return (
-    <div>
-      <Header label='transactions' />
-      {requests.map(({ account, id, request, url }, index): React.ReactNode => (
-        <Request
-          account={account}
-          isFirst={index === 0}
-          key={id}
-          request={request}
-          signId={id}
-          url={url}
-        />
-      ))}
-    </div>
-  );
+  return (<>
+    {requests.map(({ account, id, request, url }, index): React.ReactNode => (
+      <Request
+        account={account}
+        isFirst={index === 0}
+        key={id}
+        request={request}
+        signId={id}
+        url={url}
+      />
+    ))}
+  </>);
 }

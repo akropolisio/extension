@@ -51,7 +51,6 @@ export default function Account ({ address, className, onClick }: Props): React.
       className={className}
       onClick={onClick.bind(null, address)}
     >
-
       <Grid container spacing={1} wrap="nowrap" justify="flex-end">
         {isEditing && (<>
           <Grid item xs>

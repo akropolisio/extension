@@ -11,6 +11,7 @@ import { routes } from '../../routes';
 interface Props {
   children: React.ReactNode;
   headerContent?: React.ReactNode;
+  isHiddenHeader?: boolean;
 }
 
 const useStyles = makeStyles({
@@ -41,7 +42,7 @@ const useStyles = makeStyles({
 });
 
 function Layout (props: Props): React.ReactElement<Props> {
-  const { headerContent } = props;
+  const { headerContent, isHiddenHeader } = props;
   const children = React.Children.toArray(props.children);
   const filteredChildren = children.filter(value => React.isValidElement(value) && value.type !== Actions);
   const actionChildren = children.filter(value => React.isValidElement(value) && value.type === Actions);
@@ -51,29 +52,31 @@ function Layout (props: Props): React.ReactElement<Props> {
 
   return (
     <div className={cns.root}>
-      <Grid container spacing={2} wrap="nowrap" className={cns.header}>
-        {headerContent ? (
-          <Grid item zeroMinWidth>
-            {headerContent}
-          </Grid>
-        ) : (
-            <>
-              <Grid item zeroMinWidth>
-                <Typography noWrap>
-                  {activeNode
-                    ? activeNode.text
-                    : 'Custom node'
-                  }
-                </Typography>
-              </Grid>
-              <Grid item xs>
-                <Link to={routes.settings.getRedirectPath()}>
-                  <SettingsIcon color="primary" className={cns.settingsIcon} />
-                </Link>
-              </Grid>
-            </>
-        )}
-      </Grid>
+      {!isHiddenHeader && (
+        <Grid container spacing={2} wrap="nowrap" className={cns.header}>
+          {headerContent ? (
+            <Grid item zeroMinWidth>
+              {headerContent}
+            </Grid>
+          ) : (
+              <>
+                <Grid item zeroMinWidth>
+                  <Typography noWrap>
+                    {activeNode
+                      ? activeNode.text
+                      : 'Custom node'
+                    }
+                  </Typography>
+                </Grid>
+                <Grid item xs>
+                  <Link to={routes.settings.getRedirectPath()}>
+                    <SettingsIcon color="primary" className={cns.settingsIcon} />
+                  </Link>
+                </Grid>
+              </>
+          )}
+        </Grid>
+      )}
       <div className={cns.content}>
         {filteredChildren}
       </div>
