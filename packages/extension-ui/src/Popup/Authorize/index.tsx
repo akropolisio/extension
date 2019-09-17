@@ -4,15 +4,14 @@
 
 import React, { useContext } from 'react';
 
-import { AuthorizeContext, Header } from '../../components';
+import { AuthorizeContext } from '../../components';
 import Request from './Request';
 
 export default function Authorize (): React.ReactElement<{}> {
   const requests = useContext(AuthorizeContext);
 
   return (
-    <div>
-      <Header label='authorize' />
+    <>
       {requests.map(({ id, request, url }, index): React.ReactNode => (
         <Request
           authId={id}
@@ -22,6 +21,6 @@ export default function Authorize (): React.ReactElement<{}> {
           url={url}
         />
       ))}
-    </div>
+    </>
   );
 }

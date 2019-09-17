@@ -93,7 +93,7 @@ export default function Request ({ account: { isExternal }, isFirst, request, si
         )}
       </Layout.Content>
       <Layout.Actions>
-        <Button isDanger onClick={_onCancel}>Cancel</Button>
+        <Button variant="outlined" onClick={_onCancel}>Cancel</Button>
         {isVisibleSign && <Button color="primary" onClick={_onSign}>Sign</Button>}
       </Layout.Actions>
     </Layout>

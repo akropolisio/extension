@@ -5,21 +5,37 @@
 import { RequestAuthorizeTab } from '@polkadot/extension/background/types';
 
 import React, { useContext } from 'react';
-import styled from 'styled-components';
+import { makeStyles } from '@material-ui/styles';
 
-import { ActionBar, ActionContext, Button, Icon, IconBox, Link, Tip, defaults } from '../../components';
+import { ActionContext, Button, Tip, defaults, Typography } from '../../components';
 import { approveAuthRequest, rejectAuthRequest } from '../../messaging';
+import Layout from '../Layout';
 
 interface Props {
   authId: string;
-  className?: string;
   isFirst: boolean;
   request: RequestAuthorizeTab;
   url: string;
 }
 
-function Request ({ authId, className, isFirst, request: { origin }, url }: Props): React.ReactElement<Props> {
+const useStyles = makeStyles({
+  tabInfo: {
+    overflow: 'hidden'
+  },
+
+  tabHighlightedInfo: {
+    color: defaults.linkColor,
+    display: 'inline-block',
+    verticalAlign: 'top',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }
+});
+
+function Request ({ authId, isFirst, request: { origin }, url }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);
+  const cns = useStyles();
   const _onApprove = (): Promise<void> =>
     approveAuthRequest(authId)
       .then((): void => onAction())
@@ -30,50 +46,25 @@ function Request ({ authId, className, isFirst, request: { origin }, url }: Prop
       .catch((error: Error) => console.error(error));
 
   return (
-    <IconBox
-      className={className}
-      icon={
-        <Icon
-          icon='X'
-          onClick={_onReject}
-        />
-      }
-      intro={
-        <div className='tab-info'>An application, self-identifying as <span className='tab-name'>{origin}</span> is requesting access from <span className='tab-url'>{url}</span>.</div>
-      }
+    <Layout
+      headerContent={<Typography variant="h4">Authorize</Typography>}
+      isHiddenHeader={!isFirst}
     >
-      <ActionBar>
-        <Link isDanger onClick={_onReject}>Reject</Link>
-      </ActionBar>
-      {isFirst && (
-        <>
-          <Tip header='access' type='warn'>Only approve this request if you trust the application. Approving gives the application access to the addresses of your accounts.</Tip>
-          <Button onClick={_onApprove}>
-            Yes, allow this application access
-          </Button>
-        </>
-      )}
-    </IconBox>
+      <Layout.Content variant="secondary">
+        <Typography variant="body1" gutterBottom className={cns.tabInfo}>
+          {'An application, self-identifying as '}
+          <span className={cns.tabHighlightedInfo}>{origin}</span>
+          {' is requesting access from '}
+          <span className={cns.tabHighlightedInfo}>{url}</span>.
+        </Typography>
+        <Tip header='access' type='warn'>Only approve this request if you trust the application. Approving gives the application access to the addresses of your accounts.</Tip>
+      </Layout.Content>
+      <Layout.Actions>
+        <Button variant="outlined" onClick={_onReject}>Reject</Button>
+        <Button onClick={_onApprove}>Allow access</Button>
+      </Layout.Actions>
+    </Layout>
   );
 }
 
-export default styled(Request)`
-  .icon {
-    background: ${defaults.btnBgDanger};
-    color: ${defaults.btnColorDanger};
-  }
-
-  .tab-info {
-    overflow: hidden;
-  }
-
-  .tab-name,
-  .tab-url {
-    color: ${defaults.linkColor};
-    display: inline-block;
-    max-width: 20rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: top;
-  }
-`;
+export default Request;
