@@ -17,6 +17,7 @@ import { assert } from '@polkadot/util';
 import Injected from '../../page/Injected';
 import { SendRequest } from '../../page/types';
 import { ModuleType, ModuleInterface, Asset, BalanceAsset, AssetsByAddress, ChainState, MessageTypes, RequestTypes, ResponseTypes, RequestExtrinsicSign } from '../types';
+import { akroApiUrls, akroTypes } from '../chainTypes';
 import State from './State';
 
 const defaultAssetModules: AssetModules = {
@@ -102,7 +103,8 @@ export default class AssetsClass {
       }),
       switchMap(url => ApiRx.create({
         provider: new WsProvider(url),
-        signer: new Injected(makeSendRequest(this._state)).signer
+        signer: new Injected(makeSendRequest(this._state)).signer,
+        types: akroApiUrls.includes(url) ? akroTypes : undefined
       }))
     ).subscribe(value => this._api.next(value));
 

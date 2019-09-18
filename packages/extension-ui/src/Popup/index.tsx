@@ -7,15 +7,16 @@ import { Prefix } from '@polkadot/util-crypto/address/types';
 import { formatBalance } from '@polkadot/util';
 
 import React, { useEffect, useState } from 'react';
-import { Route, Switch } from 'react-router';
+import { Route, Switch, Redirect } from 'react-router';
 import settings from '@polkadot/ui-settings';
 import { setSS58Format } from '@polkadot/util-crypto';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 
-import { GlobalLoader } from '../components';
 import { AccountContext, ActionContext, AuthorizeContext, MediaContext, SigningContext, AssetsContext, ChainStateContext } from '../components/contexts';
 import { subscribeAccounts, subscribeAuthorize, subscribeSigning, subscribeAssets, subscribeChainState } from '../messaging';
+import { overrideDefaultSettings } from '../utils/overrideDefaultSettings';
+import { routes } from '../routes';
 import Accounts from './Accounts';
 import Authorize from './Authorize';
 import Create from './Create';
@@ -25,10 +26,10 @@ import Settings from './Settings';
 import Signing from './Signing';
 import Welcome from './Welcome';
 import Assets from './Assets';
-import { routes } from '../routes';
+import GlobalLoading from './GlobalLoading';
 
 // Request permission for video, based on access we can hide/show import
-async function requestMediaAccess(): Promise<boolean> {
+async function requestMediaAccess (): Promise<boolean> {
   try {
     await navigator.mediaDevices.getUserMedia({ video: true });
 
@@ -58,7 +59,7 @@ const theme = createMuiTheme({
   }
 });
 
-export default function Popup(): React.ReactElement<{}> {
+export default function Popup (): React.ReactElement<{}> {
   const [accounts, setAccounts] = useState<null | AccountJson[]>(null);
   const [authRequests, setAuthRequests] = useState<null | AuthorizeRequest[]>(null);
   const [mediaAllowed, setMediaAllowed] = useState(false);
@@ -93,6 +94,8 @@ export default function Popup(): React.ReactElement<{}> {
       subscribeChainState(handleChainStateChanging)
     ]).catch((error: Error) => console.error(error));
     _onAction();
+
+    overrideDefaultSettings();
   }, []);
 
   const Root = isWelcomeDone
@@ -125,6 +128,7 @@ export default function Popup(): React.ReactElement<{}> {
                         <Route path={routes.assets.address.getRoutePath()} component={Assets} />
                         <Route path={routes.settings.getRoutePath()} component={Settings} />
                         <Route exact path='/' component={Root} />
+                        <Redirect to='/' />
                       </Switch>
                     </ChainStateContext.Provider>
                   </AssetsContext.Provider>
@@ -133,7 +137,12 @@ export default function Popup(): React.ReactElement<{}> {
             </AuthorizeContext.Provider>
           </AccountContext.Provider>
         </ActionContext.Provider>
-      ) : <GlobalLoader />}
+      ) : (
+        <Switch>
+          <Route exact path={routes.settings.getRoutePath()} component={Settings} />
+          <Route path='/' component={GlobalLoading} />
+        </Switch>
+      )}
     </ThemeProvider>
   );
 }

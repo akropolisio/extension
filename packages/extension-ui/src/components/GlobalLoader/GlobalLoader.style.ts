@@ -1,17 +1,26 @@
-import { withStyles, WithStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/styles';
 import { Theme } from '@material-ui/core/styles';
 
-const styles = (theme: Theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    position: 'fixed',
     zIndex: theme.zIndex.modal + 1,
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
     display: 'flex',
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
+
+    '&$absolute': {
+      position: 'absolute'
+    },
+    '&$fixed': {
+      position: 'fixed'
+    }
   },
+
+  absolute: {},
+  fixed: {},
 
   content: {
     margin: 'auto',
@@ -65,8 +74,4 @@ const styles = (theme: Theme) => ({
 
     '100%': {}
   }
-} as const);
-
-export const provideStyles = withStyles(styles);
-
-export type StylesProps = WithStyles<typeof styles>;
+}));

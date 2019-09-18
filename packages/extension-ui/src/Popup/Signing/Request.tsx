@@ -22,7 +22,7 @@ interface Props {
   url: string;
 }
 
-export default function Request({ account: { isExternal }, isFirst, request, signId, url }: Props): React.ReactElement<Props> | null {
+export default function Request ({ account: { isExternal }, isFirst, request, signId, url }: Props): React.ReactElement<Props> | null {
   const onAction = useContext(ActionContext);
   const [payload, setPayload] = useState<ExtrinsicPayload | null>(null);
   const [error, setError] = useState('');

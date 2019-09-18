@@ -7,6 +7,7 @@ import Actions, { ActionsProps } from './Actions';
 import { Link, Typography, Grid } from '../../components';
 import { SettingsIcon } from '../../components/icons';
 import { routes } from '../../routes';
+import { availableNodes } from '../../constants';
 
 interface Props {
   children: React.ReactNode;
@@ -48,7 +49,7 @@ function Layout (props: Props): React.ReactElement<Props> {
   const actionChildren = children.filter(value => React.isValidElement(value) && value.type === Actions);
   const cns = useStyles();
 
-  const activeNode = settings.availableNodes.find(node => node.value.toString() === settings.apiUrl);
+  const activeNode = availableNodes.find(node => node.value.toString() === settings.apiUrl);
 
   return (
     <div className={cns.root}>
@@ -68,7 +69,7 @@ function Layout (props: Props): React.ReactElement<Props> {
                     }
                   </Typography>
                 </Grid>
-                <Grid item xs>
+                <Grid item>
                   <Link to={routes.settings.getRedirectPath()}>
                     <SettingsIcon color="primary" className={cns.settingsIcon} />
                   </Link>

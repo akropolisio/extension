@@ -10,6 +10,7 @@ import { setSS58Format } from '@polkadot/util-crypto';
 
 import { Dropdown, Button, BackButton, TextField } from '../../components';
 import { notifyApiUrlChanged, windowOpen } from '../../messaging';
+import { availableNodes } from '../../constants';
 import Layout from '../Layout';
 
 // There are probably better ways, but since we set the popup size, use that
@@ -23,12 +24,11 @@ const prefixOptions = settings.availablePrefixes.map(({ text, value }): { text: 
 
 const CUSTOM_API_URL_VALUE = '-1';
 
-const apiUrlOptions = [{ text: 'Custom node', value: CUSTOM_API_URL_VALUE }].concat(
-  settings.availableNodes.map(({ text, value }) => ({ text, value: `${value}` }))
-);
+const apiUrlOptions = [{ text: 'Custom node', value: CUSTOM_API_URL_VALUE }]
+  .concat(availableNodes.map(({ text, value }) => ({ text, value: `${value}` })));
 
 function isCustomNode (value: string): boolean {
-  return !settings.availableNodes.some(item => item.value === value);
+  return !availableNodes.some(item => item.value === value);
 }
 
 const INITIAL_CUSTOM_URL = 'wss://';
@@ -36,7 +36,7 @@ const INITIAL_CUSTOM_URL = 'wss://';
 export default function Settings (): React.ReactElement<{}> {
   const [prefix, setPrefix] = useState(`${settings.prefix}`);
   const [currentApiUrl, setCurrentApiUrl] = useState(settings.apiUrl);
-  const [selectedApiUrl, selectApiUrl] = useState(isCustomNode(settings.apiUrl) ? '' : `${settings.apiUrl}`);
+  const [selectedApiUrl, selectApiUrl] = useState(isCustomNode(settings.apiUrl) ? CUSTOM_API_URL_VALUE : `${settings.apiUrl}`);
   const [customApiUrl, setCustomApiUrl] = useState(isCustomNode(settings.apiUrl) ? `${settings.apiUrl}` : INITIAL_CUSTOM_URL);
 
   // FIXME check against index, we need a better solution
@@ -57,7 +57,7 @@ export default function Settings (): React.ReactElement<{}> {
 
   const _onChangeUrl = (value: string): void => {
     selectApiUrl(value);
-    if (value) {
+    if (value && value !== CUSTOM_API_URL_VALUE) {
       _saveApiUrl(value);
     }
   };

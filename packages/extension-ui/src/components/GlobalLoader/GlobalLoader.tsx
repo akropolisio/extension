@@ -1,17 +1,20 @@
 import * as React from 'react';
+import cn from 'classnames';
 import { Typography } from '@material-ui/core';
 
 import { Logo } from '../icons';
-import { provideStyles, StylesProps } from './GlobalLoader.style';
+import { useStyles } from './GlobalLoader.style';
 
-type Props = StylesProps & {
+interface Props {
   description?: string;
+  position?: 'absolute' | 'fixed';
 }
 
 function GlobalLoader (props: Props): React.ReactElement<Props> {
-  const { classes, description } = props;
+  const { description, position = 'fixed' } = props;
+  const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={cn(classes.root, classes[position])}>
       <div className={classes.content}>
         <Logo className={classes.logo} />
         <div className={classes.spinner} >
@@ -25,4 +28,4 @@ function GlobalLoader (props: Props): React.ReactElement<Props> {
   );
 }
 
-export default provideStyles(GlobalLoader);
+export default GlobalLoader;

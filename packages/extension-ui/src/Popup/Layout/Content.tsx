@@ -24,6 +24,8 @@ function Content (props: Props): React.ReactElement<Props> {
 
 export { Props as ContentProps };
 export default styled(Content)`
+  position: relative;
+
   &.variant_ {
     &primary {
       background: linear-gradient(360deg, #7357D2 0%, #8E41DC 100%);
